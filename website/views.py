@@ -44,4 +44,7 @@ def register_user(request):
             return redirect('register')
     form = SignUpForm()
     return render(request, 'register.html', {'form':form})
+
+def tracker(request):
+    pass
 	
