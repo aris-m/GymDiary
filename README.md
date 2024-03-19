@@ -1,4 +1,4 @@
-![CI build](https://github.com/aris-m/GymDiary/actions/workflows/build.yml/badge.svg)
+[![CI build](https://github.com/aris-m/GymDiary/actions/workflows/build.yml/badge.svg)](https://github.com/aris-m/GymDiary/actions)
 
 # GymDiary
 
