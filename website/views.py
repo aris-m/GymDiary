@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from .forms import SignUpForm
 
 def index(request):
     return render(request, "index.html", {})
@@ -16,10 +17,10 @@ def login_user(request):
             messages.success(request, "You have been logged in.")
             return redirect("index")
         else:
-            messages.success(request, "There was an Error while trying to log in.")
+            messages.error(request, "There was an error while trying to log in, please try again")
             return redirect("login")
-    else:
-        return render(request, "login.html", {})
+    
+    return render(request, "login.html", {})
 
 def logout_user(request):
     logout(request)
@@ -27,4 +28,16 @@ def logout_user(request):
     return redirect("index")
 
 def register_user(request):
-    return
+	if request.method == 'POST':
+		form = SignUpForm(request.POST)
+		if form.is_valid():
+			form.save()
+			username = form.cleaned_data['username']
+			password = form.cleaned_data['password1']
+			user = authenticate(username=username, password=password)
+			login(request, user)
+			messages.success(request, "You Have Successfully Registered! Welcome!")
+			return redirect('index')
+	
+	form = SignUpForm()
+	return render(request, 'register.html', {'form':form})
