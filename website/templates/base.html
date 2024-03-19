@@ -9,14 +9,40 @@
   <body>
     {% include "navbar.html" %}
     <div class="container">
-     {% block content %}
-     {% endblock %}
-    </div>
-    <div class="container">
         <br/>
-        {% block content1 %}
+        {% if messages %}
+          {% for message in messages %}
+              {% if message.extra_tags == 'success' %}
+              <div id="successAlert" class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              {% elif message.extra_tags == 'error' %}
+              <div id="errorAlert" class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              {% endif %}
+          {% endfor %}
+        {% endif %}
+
+        {% block content %}
         {% endblock %}
     </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+      // Automatically dismiss success alerts after 5 seconds
+      setTimeout(function() {
+        document.getElementById("successAlert").style.display = 'none';
+      }, 5000);
+
+      // Automatically dismiss error alerts after 5 seconds
+      setTimeout(function() {
+        document.getElementById("errorAlert").style.display = 'none';
+      }, 5000);
+    </script>
+    
   </body>
 </html>
