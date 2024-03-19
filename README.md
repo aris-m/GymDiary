@@ -1,3 +1,5 @@
+![CI build](https://github.com/aris-m/GymDiary/actions/workflows/build.yml/badge.svg)
+
 # GymDiary
 
 ## Project definition and objectives
