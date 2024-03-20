@@ -10,16 +10,30 @@
 
 <hr>
 
-{% if workout_sessions %}
-    <h1>Your Workout Sessions</h1>
-    <ul>
-    {% for session in workout_sessions %}
-        <li>Date: {{ session.date }} | Duration: {{ session.duration }}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No workout sessions found.</p>
-{% endif %}
+<table class="table">
+    <tbody>
+        {% if workout_sessions %}
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Notes</th>
+                </tr>
+            </thead>
+            {% for session in workout_sessions %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ session.date }}</td>
+                    <td>{{ session.duration }}</td>
+                    <td>{{ session.notes }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <p>No workout sessions found.</p>
+        {% endif %}
+    </tbody>
+  </table>
 
 
 
