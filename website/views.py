@@ -1,8 +1,11 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.messages import constants
 from .forms import SignUpForm
+from .models import WorkoutSession
+
 
 def index(request):
     return render(request, "index.html", {})
@@ -45,6 +48,9 @@ def register_user(request):
     form = SignUpForm()
     return render(request, 'register.html', {'form':form})
 
+@login_required(login_url='login')
 def tracker(request):
-    pass
+    workout_sessions = WorkoutSession.objects.filter(user=request.user)
+    return render(request, "tracker.html", {"workout_sessions": workout_sessions})
+    
 	
