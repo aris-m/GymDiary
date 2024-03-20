@@ -1,9 +1,11 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+from .models import WorkoutSession
+
 
 class SignUpForm(UserCreationForm):
-    email = forms.EmailField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email'}))
+    email = forms.EmailField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email'}), required=True)
     
     class Meta:
         model = User
@@ -26,3 +28,12 @@ class SignUpForm(UserCreationForm):
         self.fields['password2'].widget.attrs['placeholder'] = 'Confirm Password'
         self.fields['password2'].label = ''
         self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'	
+    
+class WorkoutSessionForm(forms.ModelForm):
+    date = forms.DateField(label="Date", widget=forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'date'}), required=True)
+    duration = forms.IntegerField(label="Duration (Minutes)", widget=forms.NumberInput(attrs={'class': 'form-control'}), required=False)
+    notes = forms.CharField(label="Notes", widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}), required=False)
+    
+    class Meta:
+        model = WorkoutSession
+        fields = ('date', 'duration', 'notes')

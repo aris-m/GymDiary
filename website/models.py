@@ -9,8 +9,9 @@ class Workout(models.Model):
 class WorkoutSession(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     workouts = models.ManyToManyField(Workout)
-    date = models.DateTimeField(auto_now_add=True)
-    duration = models.DurationField()
+    date = models.DateField()
+    duration = models.IntegerField(null=True, blank=True)
+    notes = models.TextField(max_length=200, null=True, blank=True)
     
 class Goal(models.Model):
     workout = models.OneToOneField(Workout, on_delete=models.CASCADE, null=True, blank=True)

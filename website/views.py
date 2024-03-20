@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.messages import constants
-from .forms import SignUpForm
+from .forms import SignUpForm, WorkoutSessionForm
 from .models import WorkoutSession
 
 
@@ -55,6 +55,26 @@ def tracker(request):
 
 @login_required(login_url='login')
 def create_workout_session(request):
-    pass
+    if request.method == "POST":
+        form = WorkoutSessionForm(request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            date = form.cleaned_data['date']
+            duration = form.cleaned_data['duration']
+            notes = form.cleaned_data['notes']
+            workout_session = WorkoutSession.objects.create(user=request.user, date=date, duration=duration, notes=notes)
+            workout_session.user = request.user
+            workout_session.save()
+            messages.success(request, "You have created a workout session", extra_tags="success")
+            return redirect('tracker')
+        else:
+            messages.error(request, "workout session failed to initialize", extra_tags="error")
+            return redirect('create-workout-session')
+    form = WorkoutSessionForm()
+    return render(request, 'create_session.html', {'form':form})
     
+@login_required(login_url='login')
+def add_workout(request):
+    pass
+
 	
