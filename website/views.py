@@ -72,6 +72,11 @@ def create_workout_session(request):
             return redirect('create-workout-session')
     form = WorkoutSessionForm()
     return render(request, 'create_session.html', {'form':form})
+
+@login_required(login_url='login')
+def user_session(request, pk):
+    workout_session = WorkoutSession.objects.get(id=pk, user=request.user)
+    return render(request, "user_session.html", {"workout_session": workout_session})
     
 @login_required(login_url='login')
 def add_workout(request):

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .card .nav-link {
+        color: black !important; 
+    }
+</style>
+
+<div class="card text">
+    <div class="card-header">
+      <ul class="nav nav-tabs card-header-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="true" href="#">General Information</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Workouts</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Goals</a>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body">
+        <p class="card-text">
+            <strong>Date: </strong>{{ workout_session.date }}
+        </p>
+        <p class="card-text">
+            <strong>Duration: </strong>{{ workout_session.duration }}
+        </p>
+        <p class="card-text">
+            <strong>Notes: </strong>{{ workout_session.notes }}
+        </p>
+    </div>
+</div>
+
+
+<br/><br/>
+<a href="{% url 'tracker' %}" class="btn btn-secondary">Back</a>
+
+
+
+{% endblock %}
