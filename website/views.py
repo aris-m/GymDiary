@@ -52,5 +52,9 @@ def register_user(request):
 def tracker(request):
     workout_sessions = WorkoutSession.objects.filter(user=request.user)
     return render(request, "tracker.html", {"workout_sessions": workout_sessions})
+
+@login_required(login_url='login')
+def create_workout_session(request):
+    pass
     
 	

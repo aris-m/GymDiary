@@ -2,7 +2,7 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-<h1> hello there </h1>
+<h1> hello there, {{user}}! </h1>
 {% else %}
 <h1>you are not logged in</h1>
 {% endif %}

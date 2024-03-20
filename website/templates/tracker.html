@@ -1,9 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 
-
-<div class="col-md-6 offset-md-3">
 <h1>Workout Sessions</h1>
+<hr>
+
+<a class="btn btn-outline-primary btn-sm" href="#">
+    Create a new workout session 
+</a>
+
+<hr>
+
+{% if workout_sessions %}
+    <h1>Your Workout Sessions</h1>
+    <ul>
+    {% for session in workout_sessions %}
+        <li>Date: {{ session.date }} | Duration: {{ session.duration }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No workout sessions found.</p>
+{% endif %}
+
 
 
 {% endblock %}
