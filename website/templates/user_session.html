@@ -6,10 +6,15 @@
         color: black !important; 
     }
 
+    .workouts-container {
+        position: relative;
+    }
+
     .add-workout {
         position: absolute;
         bottom: 10px; 
         right: 10px;
+        margin-top: 10px;
     }
 </style>
 
@@ -20,7 +25,7 @@
           <a class="nav-link active" aria-current="true" href="#general_info" data-toggle="tab">General Information</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#workouts" data-toggle="tab">Workouts</a>
+          <a class="nav-link" id="workouts-tab" href="#workouts" data-toggle="tab">Workouts</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#goals" data-toggle="tab">Goals</a>
@@ -41,8 +46,19 @@
                 </p>
             </div>
             <div class="tab-pane fade" id="workouts">
-                <p>Workouts content goes here</p>
-                <button type="button" class="add-workout btn btn-outline-primary">Add workout</button>
+                <div class="workouts-container">
+                    <a class="btn btn-outline-primary btn-sm" href="{% url 'create-workout-session' %}">
+                        Add Workout
+                    </a>
+                    <hr>
+                    <ul class="list-group">
+                        {% for workout in workouts %}
+                            <li class="list-group-item">{{ workout.name }} - {{ workout.type }}</li>
+                        {% empty %}
+                            <li class="list-group-item">No workouts recorded for this session.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
             <div class="tab-pane fade" id="goals">
                 <p>Goals content goes here</p>
@@ -65,6 +81,16 @@
             var target = $(this).attr('href');
             $('.tab-pane').removeClass('show active');
             $(target).addClass('show active');
+            
+            if (target === "#workouts") {
+                // Extract the session_id from the URL
+                var session_id = window.location.href.split("/").pop();
+                // Make an AJAX request to load the workouts for the session
+                $.get("{% url 'workouts' 0 %}".replace("0", session_id), function(data){
+                    // Replace the content of the workouts tab with the received data
+                    $("#workouts").html(data);
+                });
+            }
         });
     });
 </script>
