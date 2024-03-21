@@ -11,26 +11,36 @@
     <div class="card-header">
       <ul class="nav nav-tabs card-header-tabs">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="true" href="#">General Information</a>
+          <a class="nav-link active" aria-current="true" href="#general_info" data-toggle="tab">General Information</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Workouts</a>
+          <a class="nav-link" href="#workouts" data-toggle="tab">Workouts</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Goals</a>
+          <a class="nav-link" href="#goals" data-toggle="tab">Goals</a>
         </li>
       </ul>
     </div>
     <div class="card-body">
-        <p class="card-text">
-            <strong>Date: </strong>{{ workout_session.date }}
-        </p>
-        <p class="card-text">
-            <strong>Duration: </strong>{{ workout_session.duration }}
-        </p>
-        <p class="card-text">
-            <strong>Notes: </strong>{{ workout_session.notes }}
-        </p>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="general_info">
+                <p class="card-text">
+                    <strong>Date: </strong>{{ workout_session.date }}
+                </p>
+                <p class="card-text">
+                    <strong>Duration: </strong>{{ workout_session.duration }} minutes
+                </p>
+                <p class="card-text">
+                    <strong>Notes: </strong>{{ workout_session.notes }}
+                </p>
+            </div>
+            <div class="tab-pane fade" id="workouts">
+                <p>Workouts content goes here</p>
+            </div>
+            <div class="tab-pane fade" id="goals">
+                <p>Goals content goes here</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -38,6 +48,18 @@
 <br/><br/>
 <a href="{% url 'tracker' %}" class="btn btn-secondary">Back</a>
 
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.nav-link').on('click', function(){
+            $('.nav-link').removeClass('active');
+            $(this).addClass('active');
+            var target = $(this).attr('href');
+            $('.tab-pane').removeClass('show active');
+            $(target).addClass('show active');
+        });
+    });
+</script>
 
 {% endblock %}
