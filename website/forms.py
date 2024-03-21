@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import WorkoutSession
+from .models import WorkoutSession, Workout, Goal
 
 
 class SignUpForm(UserCreationForm):
@@ -37,3 +37,23 @@ class WorkoutSessionForm(forms.ModelForm):
     class Meta:
         model = WorkoutSession
         fields = ('date', 'duration', 'notes')
+
+class WorkoutForm(forms.ModelForm):
+    name = forms.CharField(label="Name", max_length=100, widget=forms.DateTimeInput(attrs={'class': 'form-control'}), required=True)
+    
+    class Meta:
+        model = Workout
+        fields = ['name', 'type', 'muscle_groups'] 
+
+    def __init__(self, *args, **kwargs):
+        super(WorkoutForm, self).__init__(*args, **kwargs)
+        
+        self.fields['type'].widget.attrs['class'] = 'form-control'
+        self.fields['type'].label = 'Type'
+        self.fields['type'].widget = forms.RadioSelect(choices=Workout.TYPE_CHOICES)
+        self.fields['type'].required = True
+        
+        self.fields['muscle_groups'].widget.attrs['class'] = 'form-control'
+        self.fields['muscle_groups'].label = 'Muscle Groups'
+        self.fields['muscle_groups'].widget = forms.CheckboxSelectMultiple(choices=Workout.MUSCLE_GROUP_CHOICES)
+        self.fields['muscle_groups'].required = False
