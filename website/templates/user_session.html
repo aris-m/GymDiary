@@ -47,7 +47,7 @@
             </div>
             <div class="tab-pane fade" id="workouts">
                 <div class="workouts-container">
-                    <a class="btn btn-outline-primary btn-sm" href="{% url 'create-workout-session' %}">
+                    <a class="btn btn-outline-primary btn-sm" href="{% url 'add-workout' workout_session.id %}">
                         Add Workout
                     </a>
                     <hr>
@@ -81,16 +81,6 @@
             var target = $(this).attr('href');
             $('.tab-pane').removeClass('show active');
             $(target).addClass('show active');
-            
-            if (target === "#workouts") {
-                // Extract the session_id from the URL
-                var session_id = window.location.href.split("/").pop();
-                // Make an AJAX request to load the workouts for the session
-                $.get("{% url 'workouts' 0 %}".replace("0", session_id), function(data){
-                    // Replace the content of the workouts tab with the received data
-                    $("#workouts").html(data);
-                });
-            }
         });
     });
 </script>

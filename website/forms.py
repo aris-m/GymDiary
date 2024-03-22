@@ -39,7 +39,7 @@ class WorkoutSessionForm(forms.ModelForm):
         fields = ('date', 'duration', 'notes')
 
 class WorkoutForm(forms.ModelForm):
-    name = forms.CharField(label="Name", max_length=100, widget=forms.DateTimeInput(attrs={'class': 'form-control'}), required=True)
+    name = forms.CharField(label="name", max_length=100, widget=forms.DateTimeInput(attrs={'class': 'form-control'}), required=True)
     
     class Meta:
         model = Workout

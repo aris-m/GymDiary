@@ -3,8 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.messages import constants
+from django.urls import reverse
 from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm
-from .models import WorkoutSession
+from .models import WorkoutSession, Workout, Goal
 
 
 def index(request):
@@ -83,31 +84,41 @@ def create_workout_session(request):
 @login_required(login_url='login')
 def user_session(request, pk):
     workout_session = WorkoutSession.objects.get(id=pk, user=request.user)
-    return render(request, "user_session.html", {"workout_session": workout_session})
+    workouts = workout_session.workouts.all()
+    return render(request, "user_session.html", {"workout_session": workout_session, 'workouts': workouts})
 
 """
 Add workouts to a workout session
 """
-@login_required(login_url='login')
-def workouts(request, session_id):
-    workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
-    workouts = workout_session.workouts.all()
-    
-    return render(request, 'session_workouts.html', {'workout_session': workout_session, 'workouts': workouts})
-
 # @login_required(login_url='login')
-# def add_workout(request):
-#     if request.method == "POST":
-#         form = WorkoutForm(request.POST)
-#         if form.is_valid():
-#             form.save(commit=False)
+# def workouts(request, session_id):
+#     workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
+#     workouts = workout_session.workouts.all()
+    
+#     return render(request, 'session_workouts.html', {'workout_session': workout_session, 'workouts': workouts})
+
+@login_required(login_url='login')
+def add_workout(request, session_id):
+    workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
+    
+    if request.method == "POST":
+        form = WorkoutForm(request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            name = form.cleaned_data['name']
+            type = form.cleaned_data['type']
+            muscle_groups = form.cleaned_data['muscle_groups']
+            workout = Workout.objects.create(workout_session=workout_session, name=name,type=type,muscle_groups=muscle_groups)
+            workout_session.workouts.add(workout)
+            workout.save()
+            messages.success(request, "You have added a workout", extra_tags="success")
             
-#             messages.success(request, "You have created a workout session", extra_tags="success")
-#             return redirect('tracker')
-#         else:
-#             messages.error(request, "workout session failed to initialize", extra_tags="error")
-#             return redirect('create-workout-session')
-#     form = WorkoutForm()
-#     return render(request, 'workout_form.html', {'form':form})
+            workouts = workout_session.workouts.all()
+            return render(request, 'user_session.html', {'workout_session': workout_session, 'workouts': workouts})
+        else:
+            messages.error(request, "workout failed to be added", extra_tags="error")
+            return redirect('create-workout-session')
+    form = WorkoutForm()
+    return render(request, 'add_workout.html', {'form':form, "workout_session": workout_session})
 
 	
