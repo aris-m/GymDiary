@@ -90,12 +90,6 @@ def user_session(request, pk):
 """
 Add workouts to a workout session
 """
-# @login_required(login_url='login')
-# def workouts(request, session_id):
-#     workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
-#     workouts = workout_session.workouts.all()
-    
-#     return render(request, 'session_workouts.html', {'workout_session': workout_session, 'workouts': workouts})
 
 @login_required(login_url='login')
 def add_workout(request, session_id):
