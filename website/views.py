@@ -2,9 +2,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.messages import constants
-from django.urls import reverse
-from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm
+from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm, GoalForm
 from .models import WorkoutSession, Workout, Goal
 
 
@@ -85,7 +83,8 @@ def create_workout_session(request):
 def user_session(request, pk):
     workout_session = WorkoutSession.objects.get(id=pk, user=request.user)
     workouts = workout_session.workouts.all()
-    return render(request, "user_session.html", {"workout_session": workout_session, 'workouts': workouts})
+    goals = workout_session.goals.all()
+    return render(request, "user_session.html", {"workout_session": workout_session, 'workouts': workouts, 'goals':goals})
 
 """
 Add workouts to a workout session
@@ -111,8 +110,35 @@ def add_workout(request, session_id):
             return render(request, 'user_session.html', {'workout_session': workout_session, 'workouts': workouts})
         else:
             messages.error(request, "workout failed to be added", extra_tags="error")
-            return redirect('create-workout-session')
+            return redirect('add-workout', session_id=session_id)
     form = WorkoutForm()
     return render(request, 'add_workout.html', {'form':form, "workout_session": workout_session})
+
+"""
+add goals to a workout session
+"""
+@login_required(login_url='login')
+def add_goal(request, session_id):
+    workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
+    
+    if request.method == "POST":
+        form = GoalForm(request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            description = form.cleaned_data['description']
+            accomplished = form.cleaned_data['accomplished']
+            goal = Goal.objects.create(workout_session = workout_session, description=description, accomplished=accomplished)
+            workout_session.goals.add(goal)
+            goal.save()
+            messages.success(request, "You have added a goal", extra_tags="success")
+            
+            goals = workout_session.goals.all()
+            return render(request, 'user_session.html', {'workout_session': workout_session, 'goals': goals})
+        else:
+            messages.error(request, "goal failed to be added", extra_tags="error")
+            return redirect('add-goal', session_id=session_id)
+    form = GoalForm()
+    return render(request, 'add_goal.html', {'form':form, "workout_session": workout_session})
+
 
 	

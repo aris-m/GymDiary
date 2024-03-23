@@ -57,3 +57,11 @@ class WorkoutForm(forms.ModelForm):
         self.fields['muscle_groups'].label = 'Muscle Groups'
         self.fields['muscle_groups'].widget = forms.CheckboxSelectMultiple(choices=Workout.MUSCLE_GROUP_CHOICES)
         self.fields['muscle_groups'].required = False
+        
+class GoalForm(forms.ModelForm):
+    description = forms.CharField(label="Description", max_length=200, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}), required=True)
+    accomplished = forms.BooleanField(label="Accomplished", widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}), initial=False, required=False)
+
+    class Meta:
+        model = Goal
+        fields = ['description', 'accomplished']
