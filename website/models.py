@@ -39,9 +39,8 @@ class Workout(models.Model):
 
 class Goal(models.Model):
     workout_session = models.ForeignKey('WorkoutSession', on_delete=models.CASCADE, related_name='session_goals', default=None)
-    sets = models.IntegerField()
-    reps = models.IntegerField()
-    weight = models.DecimalField(max_digits=6, decimal_places=2)
+    description = models.TextField(max_length=200, default='No Description')
+    accomplished = models.BooleanField(default=False)
 
 class WorkoutSession(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
