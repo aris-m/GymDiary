@@ -86,6 +86,13 @@ def user_session(request, pk):
     goals = workout_session.goals.all()
     return render(request, "user_session.html", {"workout_session": workout_session, 'workouts': workouts, 'goals':goals})
 
+@login_required(login_url='login')
+def delete_user_session(request, pk):
+    workout_session = WorkoutSession.objects.get(id=pk, user=request.user)
+    workout_session.delete()
+    messages.success(request, "Workout Session Deleted Successfully!")
+    return redirect('tracker')
+
 """
 Add workouts to a workout session
 """
