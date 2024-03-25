@@ -28,6 +28,11 @@
                     <td>{{ session.duration }}</td>
                     <td>{{ session.notes }}</td>
                     <td>
+                        <a class="btn btn-outline-primary btn-sm" href="{% url 'update-session' session.id %}">
+                            Update
+                        </a>
+                    </td>
+                    <td>
                         <form action="{% url 'delete-session' session.id %}" method="post" style="display: inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger btn-sm">

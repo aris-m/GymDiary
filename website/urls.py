@@ -10,6 +10,7 @@ urlpatterns = [
     path('create-workout-session/', views.create_workout_session, name='create-workout-session'),
     path('session/<int:pk>', views.user_session, name='session'),
     path('delete-session/<int:pk>', views.delete_user_session, name='delete-session'),
+    path('update-session/<int:pk>', views.update_user_session, name='update-session'),
     path('add-workout/<int:session_id>', views.add_workout, name='add-workout'),
     path('add-goal/<int:session_id>', views.add_goal, name='add-goal'),
 ]

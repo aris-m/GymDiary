@@ -93,6 +93,20 @@ def delete_user_session(request, pk):
     messages.success(request, "Workout Session Deleted Successfully!")
     return redirect('tracker')
 
+@login_required(login_url='login')
+def update_user_session(request, pk):
+    workout_session = WorkoutSession.objects.get(id=pk, user=request.user)
+    print(workout_session.date)
+    if request.method == "POST":
+        form = WorkoutSessionForm(request.POST, instance=workout_session)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Workout Session has been updated!")
+            return redirect('tracker')
+    else:
+        form = WorkoutSessionForm(instance=workout_session) 
+    return render(request, "update_session.html", {"form": form, "workout_session": workout_session})
+
 """
 Add workouts to a workout session
 """
