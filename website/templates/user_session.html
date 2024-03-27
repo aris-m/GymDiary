@@ -77,7 +77,12 @@
                     <hr>
                     <ul class="list-group">
                         {% for goal in goals %}
-                            <li class="list-group-item">{{ goal.description }} - {{ goal.accomplished }}</li>
+                            <li class="list-group-item">{{ goal.description }} - {{ goal.accomplished }}
+                                <form action="{% url 'delete-goal' workout_session.id goal.id %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                </form>
+                            </li>
                         {% empty %}
                             <li class="list-group-item">No goals recorded for this session.</li>
                         {% endfor %}

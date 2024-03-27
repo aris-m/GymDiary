@@ -147,7 +147,6 @@ def delete_workout(request, session_id, workout_id):
 def update_workout(request, session_id, workout_id):
     workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
     workout = Workout.objects.get(id=workout_id, workout_session=workout_session)
-    print(workout.muscle_groups)
     
     if request.method == "POST":
         form = WorkoutForm(request.POST, instance=workout)
@@ -185,5 +184,11 @@ def add_goal(request, session_id):
     form = GoalForm()
     return render(request, 'add_goal.html', {'form':form, "workout_session": workout_session})
 
-
-	
+@login_required(login_url='login')
+def delete_goal(request, session_id, goal_id):
+    workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
+    goal = Goal.objects.get(id=goal_id, workout_session=workout_session)
+    goal.delete()
+    messages.success(request, "Goal Deleted Successfully!")
+    return redirect('session', pk=session_id)
+    
