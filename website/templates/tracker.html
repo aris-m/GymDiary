@@ -35,7 +35,7 @@
                     <td>
                         <form action="{% url 'delete-session' session.id %}" method="post" style="display: inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">
+                            <button type="submit" class="btn btn-outline-danger">
                                 Delete
                             </button>
                         </form>

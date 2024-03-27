@@ -53,7 +53,12 @@
                     <hr>
                     <ul class="list-group">
                         {% for workout in workouts %}
-                            <li class="list-group-item">{{ workout.name }} - {{ workout.type }}</li>
+                            <li class="list-group-item">{{ workout.name }} - {{ workout.type }}
+                                <form action="{% url 'delete-workout' workout_session.id workout.id %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                </form>
+                            </li>
                         {% empty %}
                             <li class="list-group-item">No workouts recorded for this session.</li>
                         {% endfor %}

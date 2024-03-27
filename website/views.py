@@ -108,7 +108,7 @@ def update_user_session(request, pk):
     return render(request, "update_session.html", {"form": form, "workout_session": workout_session})
 
 """
-Add workouts to a workout session
+Add/Delete workouts to a workout session
 """
 
 @login_required(login_url='login')
@@ -134,6 +134,14 @@ def add_workout(request, session_id):
             return redirect('add-workout', session_id=session_id)
     form = WorkoutForm()
     return render(request, 'add_workout.html', {'form':form, "workout_session": workout_session})
+
+@login_required(login_url='login')
+def delete_workout(request, session_id, workout_id):
+    workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
+    workout = Workout.objects.get(id=workout_id, workout_session=workout_session)
+    workout.delete()
+    messages.success(request, "Workout Deleted Successfully!")
+    return redirect('session', pk=session_id)
 
 """
 add goals to a workout session
