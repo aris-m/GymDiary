@@ -53,7 +53,8 @@ class WorkoutForm(forms.ModelForm):
         self.fields['type'].widget = forms.RadioSelect(choices=Workout.TYPE_CHOICES)
         self.fields['type'].required = True
         
-        self.fields['muscle_groups'].widget.attrs['class'] = 'form-control'
+        self.fields['muscle_groups'].widget.attrs['class'] = 'form-check-input'
+        self.fields['muscle_groups'].widget.attrs['type'] = 'checkbox'
         self.fields['muscle_groups'].label = 'Muscle Groups'
         self.fields['muscle_groups'].widget = forms.CheckboxSelectMultiple(choices=Workout.MUSCLE_GROUP_CHOICES)
         self.fields['muscle_groups'].required = False

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="col-md-6 offset-md-3">
+<h1>Update Workout Entry</h1>
+<br/>
+
+<form method="POST" action="{% url 'update-workout' workout_session.id workout.id %}">
+	{% csrf_token %}
+	{% if form.errors %}
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			  Your Form Has Errors
+			  {% for field in form %}
+			  	{% if field.errors %}
+			  		{{ field.errors }}
+			  	{% endif %}
+			  {% endfor %}
+			  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+	{% endif %}
+
+	<div class="form-group">
+        <label for="{{ form.name.id_for_label }}">Name:</label>
+        {{ form.name }}
+    </div>
+    <div class="form-group">
+        <label>Type:</label>
+        {{ form.type }}
+    </div>
+    <div class="form-group">
+        <label>Muscle Groups:</label>
+        {% for group in form.muscle_groups %}
+            <div class="form-check">
+                <input type="checkbox" name="muscle_groups" value="{{ group.choice_label }}" class="form-check-input" id="{{ group.id }}" {% if group.choice_label in workout.muscle_groups%} checked {% endif %}>
+                <label class="form-check-label" for="{{ group.id }}">{{ group.choice_label }}</label>
+            </div>
+        {% endfor %}
+    </div>
+
+	<br/>
+      <a href="{% url 'tracker' %}" class="btn btn-outline-secondary">Back</a>
+	  <button type="submit" class="btn btn-outline-primary">update</button>
+</form>
+
+
+
+</div>
+
+{% endblock %}
