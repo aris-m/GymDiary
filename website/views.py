@@ -154,7 +154,7 @@ def update_workout(request, session_id, workout_id):
         if form.is_valid():
             form.save()
             messages.success(request, "Workout Updated Successfully!")
-            return redirect('session', pk=session_id)
+            return HttpResponseRedirect(reverse('session', args=[session_id]) + '?tab=workouts')
     else:
         form = WorkoutForm(instance=workout) 
     return render(request, "update_workout.html", {"form": form, "workout_session": workout_session, "workout": workout})
@@ -178,7 +178,7 @@ def add_goal(request, session_id):
             messages.success(request, "You have added a goal", extra_tags="success")
             
             goals = workout_session.goals.all()
-            return render(request, 'user_session.html', {'workout_session': workout_session, 'goals': goals})
+            return HttpResponseRedirect(reverse('session', args=[session_id]) + '?tab=goals')
         else:
             messages.error(request, "goal failed to be added", extra_tags="error")
             return redirect('add-goal', session_id=session_id)

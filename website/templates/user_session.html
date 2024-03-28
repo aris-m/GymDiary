@@ -26,13 +26,13 @@
     <div class="card-header">
       <ul class="nav nav-tabs card-header-tabs">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="true" href="#general_info" data-toggle="tab">General Information</a>
+          <a class="nav-link active" id="general_info-tab" aria-current="true" href="#general_info" data-toggle="tab">General Information</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" id="workouts-tab" href="#workouts" data-toggle="tab">Workouts</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#goals" data-toggle="tab">Goals</a>
+          <a class="nav-link" id="goals-tab" href="#goals" data-toggle="tab">Goals</a>
         </li>
       </ul>
     </div>
@@ -67,22 +67,37 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function(){
-        var tab = "{{ request.GET.tab }}";
-        if (tab === "workouts") {
+        function showTab(tab) {
             $('.nav-link').removeClass('active');
-            $('#workouts-tab').addClass('active');
+            $('#' + tab + '-tab').addClass('active');
             $('.tab-pane').removeClass('show active');
-            $('#workouts').addClass('show active');
+            $('#' + tab).addClass('show active');
+            updateUrl(tab);
+        }
+
+        function updateUrl(tab) {
+            var url = window.location.href.split('?')[0]; 
+            window.history.replaceState({}, '', url + '?tab=' + tab); 
         }
 
         $('.nav-link').on('click', function(){
-            $('.nav-link').removeClass('active');
-            $(this).addClass('active');
-            var target = $(this).attr('href');
-            $('.tab-pane').removeClass('show active');
-            $(target).addClass('show active');
+            var tab = $(this).attr('id').replace('-tab', '');
+            showTab(tab);
         });
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var tabParam = urlParams.get('tab');
+        if (tabParam) {
+            if ($('#' + tabParam).length) {
+                showTab(tabParam);
+            } else {
+                showTab('general_info'); // Default to general_info if tabParam doesn't match any tab
+            }
+        } else {
+            showTab('general_info'); // Default to general_info if no tabParam is present
+        }
     });
 </script>
+
 
 {% endblock %}
