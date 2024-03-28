@@ -5,7 +5,6 @@ from django.contrib import messages
 from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm, GoalForm
 from .models import WorkoutSession, Workout, Goal
 
-
 def index(request):
     return render(request, "index.html", {})
 
@@ -140,8 +139,9 @@ def delete_workout(request, session_id, workout_id):
     workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
     workout = Workout.objects.get(id=workout_id, workout_session=workout_session)
     workout.delete()
+    workouts = workout_session.workouts.all()
     messages.success(request, "Workout Deleted Successfully!")
-    return redirect('session', pk=session_id)
+    return render(request, 'partials/workout_list.html', {"workout_session": workout_session, "workouts":workouts})
 
 @login_required(login_url='login')
 def update_workout(request, session_id, workout_id):

@@ -50,48 +50,7 @@
                 </p>
             </div>
             <div class="tab-pane fade" id="workouts">
-                <div class="workouts-container">
-                    <a class="btn btn-outline-primary btn-sm" href="{% url 'add-workout' workout_session.id %}">
-                        Add Workout
-                    </a>
-                    <hr>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>Muscle Groups</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for workout in workouts %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ workout.name }}</td>
-                                    <td>{{ workout.type }}</td>
-                                    <td>{{ workout.muscle_groups }}</td>
-                                    <td>
-                                        <a href="{% url 'update-workout' workout_session.id workout.id %}" style="text-decoration: none;">
-                                            <span class="fas fa-pencil-alt"></span>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'delete-workout' workout_session.id workout.id %}" style="text-decoration: none;">
-                                            <span class="fas fa-times delete-icon"></span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="4">No workouts recorded for this session.</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                {% include 'partials/workout_list.html' %}
             </div>
             <div class="tab-pane fade" id="goals">
                 <div class="goals-container">
