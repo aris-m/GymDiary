@@ -1,7 +1,9 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.urls import reverse
 from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm, GoalForm
 from .models import WorkoutSession, Workout, Goal
 
@@ -126,8 +128,7 @@ def add_workout(request, session_id):
             workout.save()
             messages.success(request, "You have added a workout", extra_tags="success")
             
-            workouts = workout_session.workouts.all()
-            return render(request, 'user_session.html', {'workout_session': workout_session, 'workouts': workouts})
+            return HttpResponseRedirect(reverse('session', args=[session_id]) + '?tab=workouts')
         else:
             messages.error(request, "workout failed to be added", extra_tags="error")
             return redirect('add-workout', session_id=session_id)
@@ -189,6 +190,7 @@ def delete_goal(request, session_id, goal_id):
     workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
     goal = Goal.objects.get(id=goal_id, workout_session=workout_session)
     goal.delete()
-    messages.success(request, "Goal Deleted Successfully!")
-    return redirect('session', pk=session_id)
     
+    goals = workout_session.goals.all()
+    messages.success(request, "Goal Deleted Successfully!")
+    return render(request, 'partials/goal_list.html', {"workout_session": workout_session, "goals":goals})

@@ -1,0 +1,33 @@
+<div class="goals-container">
+    <a class="btn btn-outline-primary btn-sm" href="{% url 'add-goal' workout_session.id %}">
+        Add Goals
+    </a>
+    <hr>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Description</th>
+                <th>Accomplished</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% csrf_token %}
+            {% for goal in goals %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ goal.description }}</td>
+                    <td>{{ goal.accomplished }}</td>
+                    <td>
+                         <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'delete-goal' workout_session.id goal.id %}" hx-target=".goals-container"></span>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No goals recorded for this session.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

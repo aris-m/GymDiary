@@ -53,40 +53,7 @@
                 {% include 'partials/workout_list.html' %}
             </div>
             <div class="tab-pane fade" id="goals">
-                <div class="goals-container">
-                    <a class="btn btn-outline-primary btn-sm" href="{% url 'add-goal' workout_session.id %}">
-                        Add Goals
-                    </a>
-                    <hr>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Description</th>
-                                <th>Accomplished</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for goal in goals %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ goal.description }}</td>
-                                    <td>{{ goal.accomplished }}</td>
-                                    <td>
-                                        <a href="{% url 'delete-goal' workout_session.id goal.id %}" style="text-decoration: none;">
-                                            <span class="fas fa-times delete-icon"></span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="3">No goals recorded for this session.</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                {% include 'partials/goal_list.html' %}
             </div>
         </div>
     </div>
@@ -100,6 +67,14 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function(){
+        var tab = "{{ request.GET.tab }}";
+        if (tab === "workouts") {
+            $('.nav-link').removeClass('active');
+            $('#workouts-tab').addClass('active');
+            $('.tab-pane').removeClass('show active');
+            $('#workouts').addClass('show active');
+        }
+
         $('.nav-link').on('click', function(){
             $('.nav-link').removeClass('active');
             $(this).addClass('active');
