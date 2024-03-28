@@ -15,5 +15,6 @@ urlpatterns = [
     path('delete-workout/<int:session_id>/<int:workout_id>/', views.delete_workout, name='delete-workout'),
     path('update-workout/<int:session_id>/<int:workout_id>/', views.update_workout, name='update-workout'),
     path('add-goal/<int:session_id>', views.add_goal, name='add-goal'),
+    path('accomplish/<int:session_id>/<int:goal_id>/', views.accomplish, name='accomplish'),
     path('delete-goal/<int:session_id>/<int:goal_id>/', views.delete_goal, name='delete-goal'),
 ]

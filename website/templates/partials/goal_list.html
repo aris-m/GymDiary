@@ -10,6 +10,7 @@
                 <th>Description</th>
                 <th>Accomplished</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -20,7 +21,10 @@
                     <td>{{ goal.description }}</td>
                     <td>{{ goal.accomplished }}</td>
                     <td>
-                         <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'delete-goal' workout_session.id goal.id %}" hx-target=".goals-container"></span>
+                        <span class="fa-solid fa-check mark-icon" style="cursor: pointer;" hx-post="{% url 'accomplish' workout_session.id goal.id %}" hx-target='.goals-container'></span>
+                    </td>
+                    <td>
+                         <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'delete-goal' workout_session.id goal.id %}" hx-target=".goals-container" hx-confirm="Are you sure you wish to delete?"></span>
                     </td>
                 </tr>
             {% empty %}

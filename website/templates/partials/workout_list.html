@@ -28,7 +28,7 @@
                         </a>
                     </td>
                     <td>
-                        <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'delete-workout' workout_session.id workout.id %}" hx-target=".workouts-container"></span>
+                        <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'delete-workout' workout_session.id workout.id %}" hx-target=".workouts-container" hx-confirm="Are you sure you wish to delete?"></span>
                     </td>
                 </tr>
             {% empty %}

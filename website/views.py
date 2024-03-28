@@ -160,7 +160,7 @@ def update_workout(request, session_id, workout_id):
     return render(request, "update_workout.html", {"form": form, "workout_session": workout_session, "workout": workout})
 
 """
-add goals to a workout session
+add/delete/accomplish goals to a workout session
 """
 @login_required(login_url='login')
 def add_goal(request, session_id):
@@ -176,8 +176,6 @@ def add_goal(request, session_id):
             workout_session.goals.add(goal)
             goal.save()
             messages.success(request, "You have added a goal", extra_tags="success")
-            
-            goals = workout_session.goals.all()
             return HttpResponseRedirect(reverse('session', args=[session_id]) + '?tab=goals')
         else:
             messages.error(request, "goal failed to be added", extra_tags="error")
@@ -185,6 +183,17 @@ def add_goal(request, session_id):
     form = GoalForm()
     return render(request, 'add_goal.html', {'form':form, "workout_session": workout_session})
 
+@login_required(login_url='login')
+def accomplish(request, session_id, goal_id):
+    workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
+    goal = Goal.objects.get(id=goal_id, workout_session=workout_session)
+    goal.accomplished = True
+    goal.save()
+    
+    goals = workout_session.goals.all()
+    messages.success(request, "Goal Accomplished Successfully!")
+    return render(request, 'partials/goal_list.html', {"workout_session": workout_session, "goals":goals})
+    
 @login_required(login_url='login')
 def delete_goal(request, session_id, goal_id):
     workout_session = WorkoutSession.objects.get(id=session_id, user=request.user)
