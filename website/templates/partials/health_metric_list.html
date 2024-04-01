@@ -1,0 +1,36 @@
+<div class="health-metric-container">
+    <table class="table">
+        <tbody>
+            {% if health_metrics %}
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Bodyweight</th>
+                    <th scope="col">Calorie Intake</th>
+                    <th></th>
+                    <th></th>
+                    </tr>
+                </thead>
+                {% for metric in health_metrics %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ metric.date }}</td>
+                        <td>{{ metric.weight }}{{metric.unit}}</td>
+                        <td>{{ metric.calories }}</td>
+                        <td>
+                            <a href="{% url 'update-health-metric' metric.id %}" style="text-decoration: none;">
+                                <span class="fas fa-pencil-alt"></span>
+                            </a>
+                        </td>
+                        <td>
+                            <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'delete-health-metric' metric.id %}" hx-target=".health-metric-container" hx-confirm="Are you sure you wish to delete?"></span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <p>No health metrics found.</p>
+            {% endif %}
+        </tbody>
+    </table>
+</div>

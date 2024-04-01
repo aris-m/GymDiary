@@ -1,0 +1,36 @@
+<div class="workout-sessions-container">
+    <table class="table">
+        <tbody>
+            {% if workout_sessions %}
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Notes</th>
+                    <th></th>
+                    <th></th>
+                    </tr>
+                </thead>
+                {% for session in workout_sessions %}
+                    <tr>
+                        <td><a href="{% url 'session' session.id %}">{{ forloop.counter }}</td>
+                        <td>{{ session.date }}</td>
+                        <td>{{ session.duration }}</td>
+                        <td>{{ session.notes }}</td>
+                        <td>
+                            <a href="{% url 'update-session' session.id %}" style="text-decoration: none;">
+                                <span class="fas fa-pencil-alt"></span>
+                            </a>
+                        </td>
+                        <td>
+                            <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'delete-session' session.id %}" hx-target=".workout-sessions-container" hx-confirm="Are you sure you wish to delete?"></span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <p>No workout sessions found.</p>
+            {% endif %}
+        </tbody>
+    </table>
+</div>

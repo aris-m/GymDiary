@@ -21,4 +21,6 @@ urlpatterns = [
     path('progress/', views.progress, name='progress'),
     path('health-metric/', views.health_metric, name='health-metric'),
     path('add-health-metric/', views.add_health_metric, name='add-health-metric'),
+    path('delete-health-metric/<int:metric_id>', views.delete_health_metric, name='delete-health-metric'),
+    path('update-health-metric/<int:metric_id>', views.update_health_metric, name='update-health-metric'),
 ]

@@ -95,8 +95,9 @@ def user_session(request, pk):
 def delete_user_session(request, pk):
     workout_session = WorkoutSession.objects.get(id=pk, user=request.user)
     workout_session.delete()
+    workout_sessions = WorkoutSession.objects.filter(user=request.user)
     messages.success(request, "Workout Session Deleted Successfully!")
-    return redirect('workout_sessions')
+    return render(request, 'partials/workout_sessions_list.html', {"workout_sessions":workout_sessions})
 
 @login_required(login_url='login')
 def update_user_session(request, pk):
@@ -236,6 +237,27 @@ def add_health_metric(request):
     form = HealthMetricForm()
     return render(request, 'add_health_metric.html', {'form':form})
 
+@login_required(login_url='login')
+def delete_health_metric(request, metric_id):
+    health_metric = HealthMetric.objects.get(id=metric_id, user=request.user)
+    health_metric.delete()
+    health_metrics = HealthMetric.objects.filter(user=request.user)
+    messages.success(request, "Health Metric Deleted Successfully!")
+    return render(request, 'partials/health_metric_list.html', {"health_metrics":health_metrics})
+
+@login_required(login_url='login')
+def update_health_metric(request, metric_id):
+    health_metric = HealthMetric.objects.get(id=metric_id, user=request.user)
+    
+    if request.method == "POST":
+        form = HealthMetricForm(request.POST, instance=health_metric)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Health Metric Updated Successfully!")
+            return redirect('health-metric')
+    else:
+        form = HealthMetricForm(instance=health_metric) 
+    return render(request, "update_health_metric.html", {"form": form, "health_metric": health_metric})
 
 """
 View Progress

@@ -1,0 +1,22 @@
+.card .nav-link {
+    color: black !important; 
+}
+
+.workouts-container {
+    position: relative;
+}
+
+.add-workout {
+    position: absolute;
+    bottom: 10px; 
+    right: 10px;
+    margin-top: 10px;
+}
+
+.delete-icon {
+    color: #dc3545; 
+}
+
+.mark-icon {
+    color: green;
+}

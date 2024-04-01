@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="col-md-6 offset-md-3">
+<h1>Update Health Metric</h1>
+<br/>
+
+<form method="POST" action="{% url 'update-health-metric' health_metric.id %}">
+	{% csrf_token %}
+	{% if form.errors %}
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			  Your Form Has Errors
+			  {% for field in form %}
+			  	{% if field.errors %}
+			  		{{ field.errors }}
+			  	{% endif %}
+			  {% endfor %}
+			  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+	{% endif %}
+
+	<div class="form-group">
+        <label for="{{ form.date.id_for_label }}">Date:</label>
+        <input type="date" name="date" value="{{ form.instance.date|date:'Y-m-d' }}" class="form-control" id="{{ form.date.id_for_label }}">
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.weight.id_for_label }}">Weight:</label>
+        <input type="number" name="weight" value="{{ form.instance.weight }}" class="form-control" id="{{ form.weight.id_for_label }}">
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.unit.id_for_label }}">Unit:</label>
+        {{ form.unit }}
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.calories.id_for_label }}">Calories Intake:</label>
+        <input type="number" name="calories" value="{{ form.instance.calories }}" class="form-control" id="{{ form.calories.id_for_label }}">
+    </div>
+
+	<br/>
+	  <button type="submit" class="btn btn-secondary">Create</button>
+</form>
+
+
+
+</div>
+
+{% endblock %}
