@@ -4,8 +4,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm, GoalForm
-from .models import WorkoutSession, Workout, Goal
+from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm, GoalForm, HealthMetricForm
+from .models import HealthMetric, WorkoutSession, Workout, Goal
 
 def index(request):
     return render(request, "index.html", {})
@@ -207,6 +207,34 @@ def delete_goal(request, session_id, goal_id):
     goals = workout_session.goals.all()
     messages.success(request, "Goal Deleted Successfully!")
     return render(request, 'partials/goal_list.html', {"workout_session": workout_session, "goals":goals})
+
+"""
+view/add health metrics
+"""
+@login_required(login_url='login')
+def health_metric(request):
+    health_metrics = HealthMetric.objects.filter(user=request.user)
+    return render(request, 'health_metric.html', {"health_metrics" : health_metrics})
+
+@login_required(login_url='login')
+def add_health_metric(request):
+    if request.method == "POST":
+        form = HealthMetricForm(request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            date = form.cleaned_data['date']
+            weight = form.cleaned_data['weight']
+            unit = form.cleaned_data['unit']
+            calories = form.cleaned_data['calories']
+            healthMetric = HealthMetric.objects.create(user=request.user, date=date, weight=weight, unit=unit, calories=calories)
+            healthMetric.save()
+            messages.success(request, "You have added a health metric", extra_tags="success")
+            return redirect('health-metric')
+        else:
+            messages.error(request, "workout session failed to initialize", extra_tags="error")
+            return redirect('add-health-metric')
+    form = HealthMetricForm()
+    return render(request, 'add_health_metric.html', {'form':form})
 
 
 """

@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -46,6 +47,21 @@ class WorkoutSession(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     workouts = models.ManyToManyField(Workout, related_name='sessions')
     goals = models.ManyToManyField(Goal, related_name='sessions')
-    date = models.DateField()
+    date = models.DateField(default=timezone.now)
     duration = models.IntegerField(null=True, blank=True)
     notes = models.TextField(max_length=200, null=True, blank=True)
+    
+class HealthMetric(models.Model):
+    Kilogram = 'kg'
+    Pound = 'lbs'
+    
+    UNITS = [
+        (Kilogram, 'kg'),
+        (Pound, 'lbs'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    weight = models.FloatField(max_length=1000)
+    unit = models.CharField(max_length=3)
+    calories = models.FloatField(max_length=100000)
+    date = models.DateField(default=timezone.now)

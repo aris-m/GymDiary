@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Health Metrics</h1>
+<hr>
+
+<a class="btn btn-outline-primary btn-sm" href="{% url 'add-health-metric' %}">
+    Track Bodyweight and Calories Intake 
+</a>
+
+<hr>
+
+<table class="table">
+    <tbody>
+        {% if health_metrics %}
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Bodyweight</th>
+                <th scope="col">Calorie Intake</th>
+                <th></th>
+                <th></th>
+                </tr>
+            </thead>
+            {% for metric in health_metrics %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ metric.date }}</td>
+                    <td>{{ metric.weight }}{{metric.unit}}</td>
+                    <td>{{ metric.calories }}</td>
+                    <td>
+                        {% comment %} <a class="btn btn-outline-primary btn-sm" href="{% url 'update-session' session.id %}">
+                            Update
+                        </a> {% endcomment %}
+                    </td>
+                    <td>
+                        {% comment %} <form action="{% url 'delete-session' session.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">
+                                Delete
+                            </button>
+                        </form> {% endcomment %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <p>No health metrics found.</p>
+        {% endif %}
+    </tbody>
+  </table>
+
+
+
+{% endblock %}

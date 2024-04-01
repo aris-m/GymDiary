@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import WorkoutSession, Workout, Goal
+from .models import WorkoutSession, Workout, Goal, HealthMetric
 
 
 class SignUpForm(UserCreationForm):
@@ -66,3 +66,15 @@ class GoalForm(forms.ModelForm):
     class Meta:
         model = Goal
         fields = ['description', 'accomplished']
+
+
+class HealthMetricForm(forms.ModelForm):
+    date = forms.DateField(label="Date", widget=forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'date'}), required=True)
+    weight = forms.FloatField(label="Weight", widget=forms.NumberInput(attrs={'class': 'form-control'}), required=True)
+    unit = forms.ChoiceField(label="Unit", choices=HealthMetric.UNITS, widget=forms.Select(attrs={'class': 'form-control'}), required=True)
+    calories = forms.FloatField(label="Calories Intake", widget=forms.NumberInput(attrs={'class': 'form-control'}), required=True)
+
+    class Meta:
+        model = HealthMetric
+        fields = ['date', 'weight', 'unit', 'calories']
+    
