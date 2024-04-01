@@ -19,7 +19,7 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ goal.description }}</td>
-                    <td>{{ goal.accomplished }}</td>
+                    <td>{% if goal.accomplished %}Yes{% else %}No{% endif %}</td>
                     <td>
                         <span class="fa-solid fa-check mark-icon" style="cursor: pointer;" hx-post="{% url 'accomplish' workout_session.id goal.id %}" hx-target='.goals-container'></span>
                     </td>

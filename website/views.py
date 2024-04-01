@@ -57,8 +57,12 @@ Workout Tracker (view workout sessions, add workout session, view individual ses
 """
 @login_required(login_url='login')
 def tracker(request):
+    return render(request, "tracker.html", {})
+
+@login_required(login_url='login')
+def workout_sessions(request):
     workout_sessions = WorkoutSession.objects.filter(user=request.user)
-    return render(request, "tracker.html", {"workout_sessions": workout_sessions})
+    return render(request, "workout_session.html", {"workout_sessions": workout_sessions})
 
 @login_required(login_url='login')
 def create_workout_session(request):
@@ -73,7 +77,7 @@ def create_workout_session(request):
             workout_session.user = request.user
             workout_session.save()
             messages.success(request, "You have created a workout session", extra_tags="success")
-            return redirect('tracker')
+            return redirect('workout_sessions')
         else:
             messages.error(request, "workout session failed to initialize", extra_tags="error")
             return redirect('create-workout-session')
@@ -92,7 +96,7 @@ def delete_user_session(request, pk):
     workout_session = WorkoutSession.objects.get(id=pk, user=request.user)
     workout_session.delete()
     messages.success(request, "Workout Session Deleted Successfully!")
-    return redirect('tracker')
+    return redirect('workout_sessions')
 
 @login_required(login_url='login')
 def update_user_session(request, pk):
@@ -103,7 +107,7 @@ def update_user_session(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Workout Session has been updated!")
-            return redirect('tracker')
+            return redirect('workout_sessions')
     else:
         form = WorkoutSessionForm(instance=workout_session) 
     return render(request, "update_session.html", {"form": form, "workout_session": workout_session})

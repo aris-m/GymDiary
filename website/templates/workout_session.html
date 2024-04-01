@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Workout Sessions</h1>
+<hr>
+
+<a class="btn btn-outline-primary btn-sm" href="{% url 'create-workout-session' %}">
+    Create a new workout session 
+</a>
+
+<hr>
+
+<table class="table">
+    <tbody>
+        {% if workout_sessions %}
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Notes</th>
+                </tr>
+            </thead>
+            {% for session in workout_sessions %}
+                <tr>
+                    <td><a href="{% url 'session' session.id %}">{{ forloop.counter }}</td>
+                    <td>{{ session.date }}</td>
+                    <td>{{ session.duration }}</td>
+                    <td>{{ session.notes }}</td>
+                    <td>
+                        <a class="btn btn-outline-primary btn-sm" href="{% url 'update-session' session.id %}">
+                            Update
+                        </a>
+                    </td>
+                    <td>
+                        <form action="{% url 'delete-session' session.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <p>No workout sessions found.</p>
+        {% endif %}
+    </tbody>
+  </table>
+
+
+
+{% endblock %}
