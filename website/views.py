@@ -203,3 +203,19 @@ def delete_goal(request, session_id, goal_id):
     goals = workout_session.goals.all()
     messages.success(request, "Goal Deleted Successfully!")
     return render(request, 'partials/goal_list.html', {"workout_session": workout_session, "goals":goals})
+
+
+"""
+View Progress
+"""
+@login_required(login_url='login')
+def progress(request):
+    total_user_sessions = WorkoutSession.objects.filter(user=request.user).count()
+    total_workouts = Workout.objects.filter(workout_session__user=request.user).count()
+    total_goals = Goal.objects.filter(workout_session__user=request.user).count()
+    total_goals_accomplished = Goal.objects.filter(workout_session__user=request.user, accomplished=True).count()
+    
+    average_workouts_per_session = total_workouts / total_user_sessions if total_user_sessions > 0 else 0
+    average_goals_accomplished = int(total_goals_accomplished / total_goals * 100) if total_user_sessions > 0 else 0
+    
+    return render(request, "progress.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished})
