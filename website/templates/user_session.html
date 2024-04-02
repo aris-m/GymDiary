@@ -1,31 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% comment %} <style>
-    .card .nav-link {
-        color: black !important; 
-    }
-
-    .workouts-container {
-        position: relative;
-    }
-
-    .add-workout {
-        position: absolute;
-        bottom: 10px; 
-        right: 10px;
-        margin-top: 10px;
-    }
-
-    .delete-icon {
-        color: #dc3545; 
-    }
-
-    .mark-icon {
-        color: green;
-    }
-</style> {% endcomment %}
-
 <div class="card text">
     <div class="card-header">
       <ul class="nav nav-tabs card-header-tabs">
@@ -65,7 +40,7 @@
 
 
 <br/><br/>
-<a href="{% url 'tracker' %}" class="btn btn-secondary">Back</a>
+<a href="{% url 'workout-sessions' %}" class="btn btn-secondary">Back</a>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>

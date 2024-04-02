@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.urls import reverse
 from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm, GoalForm, HealthMetricForm
 from .models import HealthMetric, WorkoutSession, Workout, Goal
+import plotly.express as px
 
 def index(request):
     return render(request, "index.html", {})
@@ -272,4 +273,39 @@ def progress(request):
     average_workouts_per_session = total_workouts / total_user_sessions if total_user_sessions > 0 else 0
     average_goals_accomplished = int(total_goals_accomplished / total_goals * 100) if total_user_sessions > 0 else 0
     
-    return render(request, "progress.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished})
+    health_metrics = HealthMetric.objects.filter(user=request.user).order_by('date')
+    # for metric in health_metrics:
+    #     print(metric)
+    
+    dates = [metric.date for metric in health_metrics]
+    bodyweights = [metric.weight for metric in health_metrics]
+    fig = px.line(
+        x=dates,
+        y=bodyweights,
+        title="Bodyweight Progression",
+        labels={"x":"Date", "y":"Bodyweight"},
+    )
+    
+    fig.update_layout(
+        title={
+            'text': "Bodyweight Progression",
+            'x':0.5, 
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': dict(
+                family="Arial, sans-serif",
+                size=24,
+                color="black"
+            )
+        }
+    )
+    
+    chart = fig.to_html()
+    # cds = ColumnDataSource(data=dict(dates=dates, bodyweights=bodyweights))
+    
+    # p = figure(title="Bodyweight progression", x_axis_label="dates", y_axis_label="bodyweights")
+    # p.line(source=cds, x="dates", y="bodyweights", legend_label="Bodyweight", line_width=2)
+    # script, div = components(p)
+    
+    
+    return render(request, "progress.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished, "chart":chart})
