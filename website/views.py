@@ -275,51 +275,55 @@ def progress(request):
     
     health_metrics = HealthMetric.objects.filter(user=request.user).order_by('date')
     
-    dates = [metric.date for metric in health_metrics]
-    bodyweights = [metric.weight for metric in health_metrics]
-    calories_intake = [metric.calories for metric in health_metrics]
-    
-    weight_fig = px.line(
-        x=dates,
-        y=bodyweights,
-        title="Bodyweight Progression",
-        labels={"x":"Date", "y":"Bodyweight"},
-    )
+    if health_metrics:
+        dates = [metric.date for metric in health_metrics]
+        bodyweights = [metric.weight for metric in health_metrics]
+        calories_intake = [metric.calories for metric in health_metrics]
+        
+        weight_fig = px.line(
+            x=dates,
+            y=bodyweights,
+            title="Bodyweight Progression",
+            labels={"x":"Date", "y":"Bodyweight"},
+        )
+        
+        calorie_fig = px.line(
+            x=dates,
+            y=calories_intake,
+            title="Calories Intake",
+            labels={"x":"Date", "y":"Calories"},
+        )
+    else:
+        weight_fig = px.line(title="Bodyweight Progression")
+        calorie_fig = px.line(title="Calories Intake")
     
     weight_fig.update_layout(
-        title={
-            'text': "Bodyweight Progression",
-            'x':0.5, 
-            'xanchor': 'center',
-            'yanchor': 'top',
-            'font': dict(
-                family="Arial, sans-serif",
-                size=24,
-                color="black"
-            )
-        }
-    )
-    
-    calorie_fig = px.line(
-        x=dates,
-        y=calories_intake,
-        title="Calories Intake",
-        labels={"x":"Date", "y":"Calories"},
-    )
-    
+            title={
+                'text': "Bodyweight Progression",
+                'x':0.5, 
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(
+                    family="Arial, sans-serif",
+                    size=24,
+                    color="black"
+                )
+            }
+        )
+        
     calorie_fig.update_layout(
-        title={
-            'text': "Calories Intake",
-            'x':0.5, 
-            'xanchor': 'center',
-            'yanchor': 'top',
-            'font': dict(
-                family="Arial, sans-serif",
-                size=24,
-                color="black"
-            )
-        }
-    )
+            title={
+                'text': "Calories Intake",
+                'x':0.5, 
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(
+                    family="Arial, sans-serif",
+                    size=24,
+                    color="black"
+                )
+            }
+        )
     
     weight_chart = weight_fig.to_html()
     calorie_chart = calorie_fig.to_html()
