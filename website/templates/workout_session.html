@@ -2,6 +2,7 @@
 {% block content %}
 
 <h1>Workout Sessions</h1>
+<h5>Click on the individual Workout Session index to add Workouts and Goals</h5>
 <hr>
 
 <a class="btn btn-outline-primary btn-sm" href="{% url 'create-workout-session' %}">
@@ -11,7 +12,7 @@
 <hr>
 
 {% include 'partials/workout_sessions_list.html' %}
-
+<a href="{% url 'tracker' %}" class="btn btn-outline-secondary">Back</a>
 
 
 {% endblock %}
