@@ -84,6 +84,4 @@ class HealthMetricForm(forms.ModelForm):
         date = self.cleaned_data.get('date')
         if date and date > timezone.now().date():
             raise ValidationError("Date cannot be in the future.")
-        if HealthMetric.objects.filter(date=date).exists():
-            raise ValidationError("A HealthMetric object with this date already exists.")
         return date

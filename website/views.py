@@ -225,6 +225,9 @@ def add_health_metric(request):
         if form.is_valid():
             form.save(commit=False)
             date = form.cleaned_data['date']
+            if HealthMetric.objects.filter(user=request.user, date=date).exists():
+                messages.error(request, "You have already registered a Health Metric with the same date, please update the entry with the chosen date instead", extra_tags="error")
+                return redirect('add-health-metric')
             weight = form.cleaned_data['weight']
             unit = form.cleaned_data['unit']
             calories = form.cleaned_data['calories']
