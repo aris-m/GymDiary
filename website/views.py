@@ -274,19 +274,19 @@ def progress(request):
     average_goals_accomplished = int(total_goals_accomplished / total_goals * 100) if total_user_sessions > 0 else 0
     
     health_metrics = HealthMetric.objects.filter(user=request.user).order_by('date')
-    # for metric in health_metrics:
-    #     print(metric)
     
     dates = [metric.date for metric in health_metrics]
     bodyweights = [metric.weight for metric in health_metrics]
-    fig = px.line(
+    calories_intake = [metric.calories for metric in health_metrics]
+    
+    weight_fig = px.line(
         x=dates,
         y=bodyweights,
         title="Bodyweight Progression",
         labels={"x":"Date", "y":"Bodyweight"},
     )
     
-    fig.update_layout(
+    weight_fig.update_layout(
         title={
             'text': "Bodyweight Progression",
             'x':0.5, 
@@ -300,12 +300,28 @@ def progress(request):
         }
     )
     
-    chart = fig.to_html()
-    # cds = ColumnDataSource(data=dict(dates=dates, bodyweights=bodyweights))
+    calorie_fig = px.line(
+        x=dates,
+        y=calories_intake,
+        title="Calories Intake",
+        labels={"x":"Date", "y":"Calories"},
+    )
     
-    # p = figure(title="Bodyweight progression", x_axis_label="dates", y_axis_label="bodyweights")
-    # p.line(source=cds, x="dates", y="bodyweights", legend_label="Bodyweight", line_width=2)
-    # script, div = components(p)
+    calorie_fig.update_layout(
+        title={
+            'text': "Calories Intake",
+            'x':0.5, 
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': dict(
+                family="Arial, sans-serif",
+                size=24,
+                color="black"
+            )
+        }
+    )
     
+    weight_chart = weight_fig.to_html()
+    calorie_chart = calorie_fig.to_html()
     
-    return render(request, "progress.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished, "chart":chart})
+    return render(request, "progress.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished, "weight_chart":weight_chart, "calorie_chart":calorie_chart})
