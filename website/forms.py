@@ -2,6 +2,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from .models import WorkoutSession, Workout, Goal, HealthMetric
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 
 class SignUpForm(UserCreationForm):
@@ -31,7 +33,7 @@ class SignUpForm(UserCreationForm):
     
 class WorkoutSessionForm(forms.ModelForm):
     date = forms.DateField(label="Date", widget=forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'date'}), required=True)
-    duration = forms.IntegerField(label="Duration (Minutes)", widget=forms.NumberInput(attrs={'class': 'form-control'}), required=False)
+    duration = forms.IntegerField(label="Duration (Minutes)", max_value=10000, min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control'}), required=False)
     notes = forms.CharField(label="Notes", widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}), required=False)
     
     class Meta:
@@ -70,11 +72,19 @@ class GoalForm(forms.ModelForm):
 
 class HealthMetricForm(forms.ModelForm):
     date = forms.DateField(label="Date", widget=forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'date'}), required=True)
-    weight = forms.FloatField(label="Weight", widget=forms.NumberInput(attrs={'class': 'form-control'}), required=True)
+    weight = forms.FloatField(label="Weight", max_value=1000, min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control'}), required=True)
     unit = forms.ChoiceField(label="Unit", choices=HealthMetric.UNITS, widget=forms.Select(attrs={'class': 'form-control'}), required=True)
-    calories = forms.FloatField(label="Calories Intake", widget=forms.NumberInput(attrs={'class': 'form-control'}), required=True)
+    calories = forms.FloatField(label="Calories Intake", max_value=100000, min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control'}), required=True)
 
     class Meta:
         model = HealthMetric
         fields = ['date', 'weight', 'unit', 'calories']
     
+    def clean_date(self):
+        """
+        Ensure that the date entered is not in the future.
+        """
+        date = self.cleaned_data.get('date')
+        if date and date > timezone.now().date():
+            raise ValidationError("Date cannot be in the future.")
+        return date

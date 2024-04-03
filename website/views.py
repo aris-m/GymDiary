@@ -233,7 +233,7 @@ def add_health_metric(request):
             messages.success(request, "You have added a health metric", extra_tags="success")
             return redirect('health-metric')
         else:
-            messages.error(request, "workout session failed to initialize", extra_tags="error")
+            messages.error(request, "You can't use future date for the date field input", extra_tags="error")
             return redirect('add-health-metric')
     form = HealthMetricForm()
     return render(request, 'add_health_metric.html', {'form':form})
