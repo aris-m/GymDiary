@@ -78,7 +78,7 @@ def create_workout_session(request):
             workout_session.user = request.user
             workout_session.save()
             messages.success(request, "You have created a workout session", extra_tags="success")
-            return redirect('workout_sessions')
+            return redirect('workout-sessions')
         else:
             messages.error(request, "workout session failed to initialize", extra_tags="error")
             return redirect('create-workout-session')
@@ -109,10 +109,20 @@ def update_user_session(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Workout Session has been updated!")
-            return redirect('workout_sessions')
+            return redirect('workout-sessions')
     else:
         form = WorkoutSessionForm(instance=workout_session) 
     return render(request, "update_session.html", {"form": form, "workout_session": workout_session})
+
+@login_required(login_url='login')
+def sort_workout_sessions_early_furthest(request):
+    workout_sessions = WorkoutSession.objects.filter(user=request.user).order_by('date')
+    return render(request, "workout_session.html", {"workout_sessions": workout_sessions})
+
+@login_required(login_url='login')
+def sort_workout_sessions_furthest_early(request):
+    workout_sessions = WorkoutSession.objects.filter(user=request.user).order_by('-date')
+    return render(request, "workout_session.html", {"workout_sessions": workout_sessions})
 
 """
 Add/Delete/Update workouts to a workout session

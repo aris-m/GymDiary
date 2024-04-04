@@ -5,14 +5,29 @@
 <h5>Click on the individual Workout Session index to add Workouts and Goals</h5>
 <hr>
 
-<a class="btn btn-outline-primary btn-sm" href="{% url 'create-workout-session' %}">
-    Create a new workout session 
-</a>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <a class="btn btn-outline-primary btn-sm" href="{% url 'create-workout-session' %}">
+        Create a new workout session 
+    </a>
+    <div id="sort-icons">
+        <a href="{% url 'workout-sessions' %}" style="text-decoration: none;">
+            <span class="fa-solid fa-sort"></span>
+        </a>
+        <a href="{% url 'sort-workout-sessions-furthest-early' %}" style="text-decoration: none;">
+            <span class="fa-solid fa-sort-up" ></span>
+        </a>
+        <a href="{% url 'sort-workout-sessions-early-furthest' %}">
+            <span class="fa-solid fa-sort-down"></span>
+        </a> 
+    </div>
+</div>
 
 <hr>
 
 {% include 'partials/workout_sessions_list.html' %}
 <a href="{% url 'tracker' %}" class="btn btn-outline-secondary">Back</a>
+
+
 
 
 {% endblock %}
