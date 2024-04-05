@@ -65,3 +65,7 @@ class HealthMetric(models.Model):
     unit = models.CharField(max_length=3)
     calories = models.FloatField(max_length=100000)
     date = models.DateField(default=timezone.now)
+    
+class FriendshipList(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
+    friends = models.ManyToManyField(User, blank=True, related_name="friends")

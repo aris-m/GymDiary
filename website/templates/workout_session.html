@@ -10,15 +10,9 @@
         Create a new workout session 
     </a>
     <div id="sort-icons">
-        <a href="{% url 'workout-sessions' %}" style="text-decoration: none;">
-            <span class="fa-solid fa-sort"></span>
-        </a>
-        <a href="{% url 'sort-workout-sessions-furthest-early' %}" style="text-decoration: none;">
-            <span class="fa-solid fa-sort-up" ></span>
-        </a>
-        <a href="{% url 'sort-workout-sessions-early-furthest' %}">
-            <span class="fa-solid fa-sort-down"></span>
-        </a> 
+        <a href="{% url 'workout-sessions' %}" style="text-decoration: none;" class="fa-solid fa-sort" id="sort-icon-default"></a>
+        <a href="{% url 'sort-workout-sessions-furthest-early' %}" style="text-decoration: none;" class="fa-solid fa-sort-up"></a>
+        <a class="fa-solid fa-sort-down" href="{% url 'sort-workout-sessions-early-furthest' %}" style="text-decoration: none;"></a>
     </div>
 </div>
 
@@ -26,7 +20,6 @@
 
 {% include 'partials/workout_sessions_list.html' %}
 <a href="{% url 'tracker' %}" class="btn btn-outline-secondary">Back</a>
-
 
 
 

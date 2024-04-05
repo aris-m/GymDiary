@@ -25,4 +25,7 @@ urlpatterns = [
     path('add-health-metric/', views.add_health_metric, name='add-health-metric'),
     path('delete-health-metric/<int:metric_id>', views.delete_health_metric, name='delete-health-metric'),
     path('update-health-metric/<int:metric_id>', views.update_health_metric, name='update-health-metric'),
+    path('community/', views.friends_list, name='community'),
+    path('add-friend/<int:friend_id>', views.add_friend, name='add-friend'),
+    path('search-friends/', views.search_friends, name='search-friends'),
 ]

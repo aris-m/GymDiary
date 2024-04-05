@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm, GoalForm, HealthMetricForm
-from .models import HealthMetric, WorkoutSession, Workout, Goal
+from .models import HealthMetric, WorkoutSession, Workout, Goal, FriendshipList
+from django.contrib.auth.models import User
 import plotly.express as px
 
 def index(request):
@@ -45,6 +46,7 @@ def register_user(request):
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
             login(request, user)
+            FriendshipList.objects.create(user=user)
             messages.success(request, "You Have Successfully Registered! Welcome!", extra_tags="success")
             return redirect('index')
         else:
@@ -342,3 +344,32 @@ def progress(request):
     calorie_chart = calorie_fig.to_html()
     
     return render(request, "progress.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished, "weight_chart":weight_chart, "calorie_chart":calorie_chart})
+
+"""
+View/Search/Add Friends
+"""
+@login_required(login_url='login')
+def friends_list(request):
+    friendshipList = FriendshipList.objects.get(user=request.user).friends.all()
+    return render(request, 'community.html', {'friendshipList': friendshipList})
+
+@login_required(login_url='login')
+def add_friend(request, friend_id):
+    friend = User.objects.get(id=friend_id)
+    friendship_list = FriendshipList.objects.get(user=request.user)
+    
+    if friend in friendship_list.friends.all():
+        messages.error(request, "You're already in a friendship with this user", extra_tags="error")
+    else:
+        friendship_list.friends.add(friend)
+
+    return render(request, 'partials/friend-list.html', {'friendshipList': friendship_list.friends.all()})
+
+@login_required(login_url='login')
+def search_friends(request):
+    search_text = request.POST.get('search')
+    if search_text == '':
+        results = []
+    else:
+        results = User.objects.filter(username__icontains=search_text).exclude(id=request.user.id).exclude(username='admin')
+    return render(request, "partials/search-friends-result.html", {"results":results})
