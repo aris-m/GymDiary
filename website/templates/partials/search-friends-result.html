@@ -7,9 +7,9 @@
             {{ user }}
             <span class="fa-solid fa-plus" 
                 style="cursor: pointer;"
-                hx-post="{% url 'add-friend' user.id %}"
+                hx-post="{% url 'send-friend-request' user.id %}"
                 hx-vals='{"user": "{{user}}"}'
-                hx-target="#friends-list"></span>
+                hx-target="#community-list"></span>
         </li>
     {% endfor %}
     </ul>
