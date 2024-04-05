@@ -14,12 +14,29 @@
           {% endfor %}
 {% endif %}
 
-<div id="friends-list">
-    <ul>
-        {% for friend in friendshipList %}
-        <li> {{ friend }} </li>
-        {% empty %}
-        You haven't added any friends yet.
-        {% endfor %}
-    </ul>
+<div class="friend-list-container" id="friends-list">
+    <table class="table">
+        <tbody>
+            {% if friendshipList %}
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th></th>
+                    </tr>
+                </thead>
+                {% for friend in friendshipList %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ friend }}</td>
+                        <td>
+                            <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'unfriend' friend.id %}" hx-target=".friend-list-container" hx-confirm="Are you sure you wish to delete?"></span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <p>You haven't added any friends yet.</p>
+            {% endif %}
+        </tbody>
+    </table>
 </div>

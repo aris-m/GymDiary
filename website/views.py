@@ -286,7 +286,7 @@ def progress(request):
     total_goals_accomplished = Goal.objects.filter(workout_session__user=request.user, accomplished=True).count()
     
     average_workouts_per_session = total_workouts / total_user_sessions if total_user_sessions > 0 else 0
-    average_goals_accomplished = int(total_goals_accomplished / total_goals * 100) if total_user_sessions > 0 else 0
+    average_goals_accomplished = int(total_goals_accomplished / total_goals * 100) if total_goals > 0 else 0
     
     health_metrics = HealthMetric.objects.filter(user=request.user).order_by('date')
     
@@ -373,3 +373,16 @@ def search_friends(request):
     else:
         results = User.objects.filter(username__icontains=search_text).exclude(id=request.user.id).exclude(username='admin')
     return render(request, "partials/search-friends-result.html", {"results":results})
+
+@login_required(login_url='login')
+def unfriend(request, friend_id):
+    friend = User.objects.get(id=friend_id)
+    friendship_list = FriendshipList.objects.get(user=request.user)
+    
+    if friend in friendship_list.friends.all():
+        friendship_list.friends.remove(friend)
+        messages.success(request, "Friend removed successfully!", extra_tags="success")
+    else:
+        messages.error(request, "This user is not in your friends list", extra_tags="error")
+
+    return render(request, 'partials/friend-list.html', {'friendshipList': friendship_list.friends.all()})

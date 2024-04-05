@@ -28,4 +28,5 @@ urlpatterns = [
     path('community/', views.friends_list, name='community'),
     path('add-friend/<int:friend_id>', views.add_friend, name='add-friend'),
     path('search-friends/', views.search_friends, name='search-friends'),
+    path('unfriend/<int:friend_id>', views.unfriend, name='unfriend'),
 ]
