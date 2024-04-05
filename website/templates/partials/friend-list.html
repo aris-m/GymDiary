@@ -33,10 +33,10 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ request.sender }}</td>
                         <td>
-                            <span class="fa-solid fa-check mark-icon" style="cursor: pointer;" hx-post="{% url 'add-friend' request.sender.id %}" hx-target='.friend-request-list-container'></span>
+                            <span class="fa-solid fa-check mark-icon" style="cursor: pointer;" hx-post="{% url 'add-friend' request.sender.id %}" hx-target='#community-list'></span>
                         </td>
                         <td>
-                            <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'reject-friend-request' request.id %}" hx-target=".friend-request-list-container" hx-confirm="Are you sure you wish to delete?"></span>
+                            <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'reject-friend-request' request.id %}" hx-target="#community-list" hx-confirm="Are you sure you wish to delete?"></span>
                         </td>
                     </tr>
                 {% endfor %}
