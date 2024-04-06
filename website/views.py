@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm, GoalForm, HealthMetricForm
-from .models import HealthMetric, WorkoutSession, Workout, Goal, FriendshipList
+from .models import HealthMetric, WorkoutSession, Workout, Goal, FriendshipList, FriendshipRequest
 from django.contrib.auth.models import User
 import plotly.express as px
 
@@ -286,7 +286,7 @@ def progress(request):
     total_goals_accomplished = Goal.objects.filter(workout_session__user=request.user, accomplished=True).count()
     
     average_workouts_per_session = total_workouts / total_user_sessions if total_user_sessions > 0 else 0
-    average_goals_accomplished = int(total_goals_accomplished / total_goals * 100) if total_user_sessions > 0 else 0
+    average_goals_accomplished = int(total_goals_accomplished / total_goals * 100) if total_goals > 0 else 0
     
     health_metrics = HealthMetric.objects.filter(user=request.user).order_by('date')
     
@@ -343,27 +343,144 @@ def progress(request):
     weight_chart = weight_fig.to_html()
     calorie_chart = calorie_fig.to_html()
     
-    return render(request, "progress.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished, "weight_chart":weight_chart, "calorie_chart":calorie_chart})
+    return render(request, "progress.html", {
+        "total_user_sessions":total_user_sessions, 
+        "average_workouts_per_session": average_workouts_per_session, 
+        "average_goals_accomplished":average_goals_accomplished, 
+        "weight_chart":weight_chart, 
+        "calorie_chart":calorie_chart
+    })
+
+@login_required(login_url='login')
+def friend_progress(request, friend_id):
+    friend = User.objects.get(id=friend_id)
+    friend_sessions = WorkoutSession.objects.filter(user=friend)
+    total_sessions = friend_sessions.count()
+    total_workouts = Workout.objects.filter(workout_session__user=friend).count()
+    total_goals = Goal.objects.filter(workout_session__user=friend).count()
+    total_goals_accomplished = Goal.objects.filter(workout_session__user=friend, accomplished=True).count()
+    
+    average_workouts_per_session = total_workouts / total_sessions if total_sessions > 0 else 0
+    average_goals_accomplished = int(total_goals_accomplished / total_goals * 100) if total_goals > 0 else 0
+    
+    health_metrics = HealthMetric.objects.filter(user=friend).order_by('date')
+    
+    if health_metrics:
+        dates = [metric.date for metric in health_metrics]
+        bodyweights = [metric.weight for metric in health_metrics]
+        calories_intake = [metric.calories for metric in health_metrics]
+        
+        weight_fig = px.line(
+            x=dates,
+            y=bodyweights,
+            title=f"{friend.username}'s Bodyweight Progression",
+            labels={"x":"Date", "y":"Bodyweight"},
+        )
+        
+        calorie_fig = px.line(
+            x=dates,
+            y=calories_intake,
+            title=f"{friend.username}'s Calories Intake",
+            labels={"x":"Date", "y":"Calories"},
+        )
+    else:
+        weight_fig = px.line(title=f"{friend.username}'s Bodyweight Progression")
+        calorie_fig = px.line(title=f"{friend.username}'s Calories Intake")
+    
+    weight_fig.update_layout(
+            title={
+                'text': f"{friend.username}'s Bodyweight Progression",
+                'x':0.5, 
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(
+                    family="Arial, sans-serif",
+                    size=24,
+                    color="black"
+                )
+            }
+        )
+        
+    calorie_fig.update_layout(
+            title={
+                'text': f"{friend.username}'s Calories Intake",
+                'x':0.5, 
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(
+                    family="Arial, sans-serif",
+                    size=24,
+                    color="black"
+                )
+            }
+        )
+    
+    weight_chart = weight_fig.to_html()
+    calorie_chart = calorie_fig.to_html()
+    
+    return render(request, "friend_progress.html", {
+        "friend": friend,
+        "total_sessions": total_sessions,
+        "average_workouts_per_session": average_workouts_per_session,
+        "average_goals_accomplished": average_goals_accomplished,
+        "weight_chart": weight_chart,
+        "calorie_chart": calorie_chart,
+    })
 
 """
 View/Search/Add Friends
 """
 @login_required(login_url='login')
 def friends_list(request):
+    friend_requests = FriendshipRequest.objects.filter(receiver=request.user)
     friendshipList = FriendshipList.objects.get(user=request.user).friends.all()
-    return render(request, 'community.html', {'friendshipList': friendshipList})
+    return render(request, 'community.html', {'friendshipList': friendshipList, "friend_requests":friend_requests})
 
+@login_required(login_url='login')
+def send_friend_request(request, friend_id):
+    sender = request.user
+    receiver = User.objects.get(id=friend_id)
+    friend_requests = FriendshipRequest.objects.filter(receiver=request.user)
+    friendshipList = FriendshipList.objects.get(user=request.user).friends.all()
+    
+    if FriendshipRequest.objects.filter(sender=sender, receiver=receiver).exists():
+        messages.error(request, "You have already sent a friend request to this user.", extra_tags="error")
+    elif FriendshipRequest.objects.filter(sender=receiver, receiver=sender).exists():
+        messages.error(request, "This user have already sent you a friend request.", extra_tags="error")
+    else:
+        friend_request = FriendshipRequest.objects.create(sender=sender, receiver=receiver)
+        friend_request.save()
+        messages.success(request, "Friend request sent successfully!", extra_tags="success")
+    
+    return render(request, 'partials/friend-list.html', {"friend_requests":friend_requests, 'friendshipList': friendshipList})
+
+@login_required(login_url='login')
+def reject_friend_request(request, request_id):
+    friend_request = FriendshipRequest.objects.get(id=request_id, receiver=request.user)
+    friend_request.delete()
+    friend_requests = FriendshipRequest.objects.filter(receiver=request.user)
+    friendshipList = FriendshipList.objects.get(user=request.user).friends.all()
+    messages.success(request, "Friend request rejected successfully!", extra_tags="success")
+    return render(request, 'partials/friend-list.html', {"friend_requests":friend_requests, 'friendshipList': friendshipList})
+    
 @login_required(login_url='login')
 def add_friend(request, friend_id):
     friend = User.objects.get(id=friend_id)
-    friendship_list = FriendshipList.objects.get(user=request.user)
+    friendship_list_user = FriendshipList.objects.get(user=request.user)
+    friendship_list_friend = FriendshipList.objects.get(user=friend)
     
-    if friend in friendship_list.friends.all():
+    if friend in friendship_list_user.friends.all():
         messages.error(request, "You're already in a friendship with this user", extra_tags="error")
     else:
-        friendship_list.friends.add(friend)
+        friendship_list_user.friends.add(friend)
+        friendship_list_friend.friends.add(request.user)
+    
+    if FriendshipRequest.objects.filter(sender=friend, receiver=request.user).exists():
+        FriendshipRequest.objects.get(sender=friend, receiver=request.user).delete()
+    
+    friend_requests = FriendshipRequest.objects.filter(receiver=request.user)
 
-    return render(request, 'partials/friend-list.html', {'friendshipList': friendship_list.friends.all()})
+    return render(request, 'partials/friend-list.html', {'friendshipList': friendship_list_user.friends.all(), "friend_requests":friend_requests})
 
 @login_required(login_url='login')
 def search_friends(request):
@@ -373,3 +490,19 @@ def search_friends(request):
     else:
         results = User.objects.filter(username__icontains=search_text).exclude(id=request.user.id).exclude(username='admin')
     return render(request, "partials/search-friends-result.html", {"results":results})
+
+@login_required(login_url='login')
+def unfriend(request, friend_id):
+    friend = User.objects.get(id=friend_id)
+    friendship_list_user = FriendshipList.objects.get(user=request.user)
+    friendship_list_friend = FriendshipList.objects.get(user=friend)
+    friend_requests = FriendshipRequest.objects.filter(receiver=request.user)
+    
+    if friend in friendship_list_user.friends.all():
+        friendship_list_user.friends.remove(friend)
+        friendship_list_friend.friends.remove(request.user)
+        messages.success(request, "Friend removed successfully!", extra_tags="success")
+    else:
+        messages.error(request, "This user is not in your friends list", extra_tags="error")
+
+    return render(request, 'partials/friend-list.html', {"friend_requests":friend_requests, 'friendshipList': friendship_list_user.friends.all()})

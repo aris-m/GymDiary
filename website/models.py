@@ -33,20 +33,20 @@ class Workout(models.Model):
         (SHOULDERS, 'shoulders'),
     ]
     
-    workout_session = models.ForeignKey('WorkoutSession', on_delete=models.CASCADE, related_name='session_workouts', default=None)
+    workout_session = models.ForeignKey('WorkoutSession', on_delete=models.CASCADE, related_name='workout_session_rel_to_workout', default=None)
     name = models.CharField(max_length=50)
     type = models.CharField(max_length=50)
     muscle_groups = models.CharField(max_length=100)
 
 class Goal(models.Model):
-    workout_session = models.ForeignKey('WorkoutSession', on_delete=models.CASCADE, related_name='session_goals', default=None)
+    workout_session = models.ForeignKey('WorkoutSession', on_delete=models.CASCADE, related_name='workout_session_rel_to_goal', default=None)
     description = models.TextField(max_length=200, default='No Description')
     accomplished = models.BooleanField(default=False)
 
 class WorkoutSession(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    workouts = models.ManyToManyField(Workout, related_name='sessions')
-    goals = models.ManyToManyField(Goal, related_name='sessions')
+    workouts = models.ManyToManyField(Workout, related_name='session_workouts')
+    goals = models.ManyToManyField(Goal, related_name='session_goals')
     date = models.DateField(default=timezone.now)
     duration = models.IntegerField(null=True, blank=True)
     notes = models.TextField(max_length=200, null=True, blank=True)
@@ -69,3 +69,7 @@ class HealthMetric(models.Model):
 class FriendshipList(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
     friends = models.ManyToManyField(User, blank=True, related_name="friends")
+    
+class FriendshipRequest(models.Model):
+    sender = models.ForeignKey(User, related_name='sender', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='receiver', on_delete=models.CASCADE)

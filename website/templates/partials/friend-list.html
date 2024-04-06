@@ -14,12 +14,67 @@
           {% endfor %}
 {% endif %}
 
-<div id="friends-list">
-    <ul>
-        {% for friend in friendshipList %}
-        <li> {{ friend }} </li>
-        {% empty %}
-        You haven't added any friends yet.
-        {% endfor %}
-    </ul>
+<div id="community-list">
+<h3>Friend Requests</h3>
+<div class="friend-request-list-container" id="friends-request-list">
+    <table class="table">
+        <tbody>
+            {% if friend_requests %}
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th></th>
+                    <th></th>
+                    </tr>
+                </thead>
+                {% for request in friend_requests %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ request.sender }}</td>
+                        <td>
+                            <span class="fa-solid fa-check mark-icon" style="cursor: pointer;" hx-post="{% url 'add-friend' request.sender.id %}" hx-target='#community-list'></span>
+                        </td>
+                        <td>
+                            <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'reject-friend-request' request.id %}" hx-target="#community-list" hx-confirm="Are you sure you wish to delete?"></span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <p>You don't have any friend requests.</p>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<br/>
+
+<h3>Friends</h3>
+<p>click on your friends' username to see their progress</p>
+<div class="friend-list-container" id="friends-list">
+    <table class="table">
+        <tbody>
+            {% if friendshipList %}
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th></th>
+                    </tr>
+                </thead>
+                {% for friend in friendshipList %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="{% url 'friend-progress' friend.id %}">{{ friend.username }}</a></td>
+                        <td>
+                            <span class="fas fa-times delete-icon" style="cursor: pointer;" hx-delete="{% url 'unfriend' friend.id %}" hx-target="#community-list" hx-confirm="Are you sure you wish to delete?"></span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <p>You haven't added any friends yet.</p>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
 </div>

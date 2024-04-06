@@ -2,9 +2,14 @@
 {% block content %}
 
 {% if user.is_authenticated %}
+
 <h1> hello there, {{user}}! </h1>
+<hr>
+
 {% else %}
-<h1>you are not logged in</h1>
+<h1>Welcome to GymDiary, a web app to track your workout progress.</h1>
+<h2>To get full access to the features please register an account and login with your account details.</h2>
 {% endif %}
+
 
 {% endblock %}
