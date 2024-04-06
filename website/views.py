@@ -105,7 +105,6 @@ def delete_user_session(request, pk):
 @login_required(login_url='login')
 def update_user_session(request, pk):
     workout_session = WorkoutSession.objects.get(id=pk, user=request.user)
-    print(workout_session.date)
     if request.method == "POST":
         form = WorkoutSessionForm(request.POST, instance=workout_session)
         if form.is_valid():
