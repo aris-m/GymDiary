@@ -340,7 +340,89 @@ def progress(request):
     weight_chart = weight_fig.to_html()
     calorie_chart = calorie_fig.to_html()
     
-    return render(request, "index.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished, "weight_chart":weight_chart, "calorie_chart":calorie_chart})
+    return render(request, "index.html", {
+        "total_user_sessions":total_user_sessions, 
+        "average_workouts_per_session": average_workouts_per_session, 
+        "average_goals_accomplished":average_goals_accomplished, 
+        "weight_chart":weight_chart, 
+        "calorie_chart":calorie_chart
+    })
+
+@login_required(login_url='login')
+def friend_progress(request, friend_id):
+    friend = User.objects.get(id=friend_id)
+    friend_sessions = WorkoutSession.objects.filter(user=friend)
+    total_sessions = friend_sessions.count()
+    total_workouts = Workout.objects.filter(workout_session__user=friend).count()
+    total_goals = Goal.objects.filter(workout_session__user=friend).count()
+    total_goals_accomplished = Goal.objects.filter(workout_session__user=friend, accomplished=True).count()
+    
+    average_workouts_per_session = total_workouts / total_sessions if total_sessions > 0 else 0
+    average_goals_accomplished = int(total_goals_accomplished / total_goals * 100) if total_goals > 0 else 0
+    
+    health_metrics = HealthMetric.objects.filter(user=friend).order_by('date')
+    
+    if health_metrics:
+        dates = [metric.date for metric in health_metrics]
+        bodyweights = [metric.weight for metric in health_metrics]
+        calories_intake = [metric.calories for metric in health_metrics]
+        
+        weight_fig = px.line(
+            x=dates,
+            y=bodyweights,
+            title=f"{friend.username}'s Bodyweight Progression",
+            labels={"x":"Date", "y":"Bodyweight"},
+        )
+        
+        calorie_fig = px.line(
+            x=dates,
+            y=calories_intake,
+            title=f"{friend.username}'s Calories Intake",
+            labels={"x":"Date", "y":"Calories"},
+        )
+    else:
+        weight_fig = px.line(title=f"{friend.username}'s Bodyweight Progression")
+        calorie_fig = px.line(title=f"{friend.username}'s Calories Intake")
+    
+    weight_fig.update_layout(
+            title={
+                'text': f"{friend.username}'s Bodyweight Progression",
+                'x':0.5, 
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(
+                    family="Arial, sans-serif",
+                    size=24,
+                    color="black"
+                )
+            }
+        )
+        
+    calorie_fig.update_layout(
+            title={
+                'text': f"{friend.username}'s Calories Intake",
+                'x':0.5, 
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(
+                    family="Arial, sans-serif",
+                    size=24,
+                    color="black"
+                )
+            }
+        )
+    
+    weight_chart = weight_fig.to_html()
+    calorie_chart = calorie_fig.to_html()
+    
+    return render(request, "friend_progress.html", {
+        "friend": friend,
+        "total_sessions": total_sessions,
+        "average_workouts_per_session": average_workouts_per_session,
+        "average_goals_accomplished": average_goals_accomplished,
+        "weight_chart": weight_chart,
+        "calorie_chart": calorie_chart,
+    })
 
 """
 View/Search/Add Friends

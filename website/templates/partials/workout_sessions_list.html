@@ -14,7 +14,7 @@
                 </thead>
                 {% for session in workout_sessions %}
                     <tr>
-                        <td><a href="{% url 'session' session.id %}">{{ forloop.counter }}</td>
+                        <td><a href="{% url 'session' session.id %}">{{ forloop.counter }}</a></td>
                         <td>{{ session.date }}</td>
                         <td>{{ session.duration }}</td>
                         <td>{{ session.notes }}</td>
