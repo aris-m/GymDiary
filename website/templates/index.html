@@ -2,9 +2,34 @@
 {% block content %}
 
 {% if user.is_authenticated %}
+
 <h1> hello there, {{user}}! </h1>
+<hr>
+
+<div class="container text-center">
+  <div class="row align-items-center">
+    <div class="col">
+      <p>Total Sessions: {{ total_user_sessions }}</p>
+    </div>
+    <div class="col">
+      <p>Average workouts per session: {{ average_workouts_per_session }}</p>
+    </div>
+    <div class="col">
+      <p>Goal accomplished: {{ average_goals_accomplished }}%</p>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<div class="container chart">
+{{ weight_chart|safe }}
+{{ calorie_chart|safe }}
+</div>
+
 {% else %}
 <h1>you are not logged in</h1>
 {% endif %}
+
 
 {% endblock %}

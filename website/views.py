@@ -9,9 +9,6 @@ from .models import HealthMetric, WorkoutSession, Workout, Goal, FriendshipList,
 from django.contrib.auth.models import User
 import plotly.express as px
 
-def index(request):
-    return render(request, "index.html", {})
-
 """
 Login/Logout/Register for user
 """
@@ -343,7 +340,7 @@ def progress(request):
     weight_chart = weight_fig.to_html()
     calorie_chart = calorie_fig.to_html()
     
-    return render(request, "progress.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished, "weight_chart":weight_chart, "calorie_chart":calorie_chart})
+    return render(request, "index.html", {"total_user_sessions":total_user_sessions, "average_workouts_per_session": average_workouts_per_session, "average_goals_accomplished":average_goals_accomplished, "weight_chart":weight_chart, "calorie_chart":calorie_chart})
 
 """
 View/Search/Add Friends
