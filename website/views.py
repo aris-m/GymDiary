@@ -414,6 +414,7 @@ def unfriend(request, friend_id):
     friend = User.objects.get(id=friend_id)
     friendship_list_user = FriendshipList.objects.get(user=request.user)
     friendship_list_friend = FriendshipList.objects.get(user=friend)
+    friend_requests = FriendshipRequest.objects.filter(receiver=request.user)
     
     if friend in friendship_list_user.friends.all():
         friendship_list_user.friends.remove(friend)
@@ -422,4 +423,4 @@ def unfriend(request, friend_id):
     else:
         messages.error(request, "This user is not in your friends list", extra_tags="error")
 
-    return render(request, 'partials/friend-list.html', {'friendshipList': friendship_list_user.friends.all()})
+    return render(request, 'partials/friend-list.html', {"friend_requests":friend_requests, 'friendshipList': friendship_list_user.friends.all()})
