@@ -1,7 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.contrib.messages import get_messages
 
 class tests(TestCase):
     def setUp(self):
@@ -24,11 +23,10 @@ class tests(TestCase):
         self.assertRedirects(response, self.index_url)
 
     def test_register_user(self):
-        response = self.client.post(self.register_url, {'username': 'newuser', 'password1': 'newpassword', 'password2': 'newpassword'})
+        response = self.client.post(self.register_url, {'username': 'newuser', 'email': 'newuser@gmail.com', 'password1': 'Newpassword#123', 'password2': 'Newpassword#123'})
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.index_url)
-
         self.assertTrue(User.objects.filter(username='newuser').exists())
+        self.assertRedirects(response, self.index_url)
     
 
     
