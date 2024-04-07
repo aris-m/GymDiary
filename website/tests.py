@@ -13,6 +13,8 @@ class tests(TestCase):
         self.index_url = reverse('index')
         self.tracker_url = reverse('tracker')
         self.workout_sessions_url = reverse('workout-sessions')
+        self.sort_workout_sessions_early_furthest = reverse('sort-workout-sessions-early-furthest')
+        self.sort_workout_sessions_furthest_early = reverse('sort-workout-sessions-furthest-early')
         self.user = User.objects.create_user(username='testuser', password='testpassword')
         self.client.login(username='testuser', password='testpassword')
 
@@ -116,3 +118,35 @@ class tests(TestCase):
         self.assertEqual(updated_session.date, datetime.strptime('2024-04-07', '%Y-%m-%d').date())
         self.assertEqual(updated_session.duration, 60)
         self.assertEqual(updated_session.notes, 'test notes')
+    
+    def test_sort_workout_sessions_early_furthest(self):
+        session1 = WorkoutSession.objects.create(user=self.user, date='2024-04-05', duration=60, notes='test session 1')
+        session2 = WorkoutSession.objects.create(user=self.user, date='2024-04-07', duration=60, notes='test session 2')
+        session3 = WorkoutSession.objects.create(user=self.user, date='2024-04-06', duration=60, notes='test session 3')
+
+        response = self.client.get(self.sort_workout_sessions_early_furthest)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'workout_session.html')
+        self.assertTrue('workout_sessions' in response.context)
+
+        sorted_sessions = response.context['workout_sessions']
+        self.assertEqual(len(sorted_sessions), 3)
+        self.assertEqual(sorted_sessions[0], session1)
+        self.assertEqual(sorted_sessions[1], session3)
+        self.assertEqual(sorted_sessions[2], session2)
+        
+    def test_sort_workout_sessions_furthest_early(self):
+        session1 = WorkoutSession.objects.create(user=self.user, date='2024-04-05', duration=60, notes='test session 1')
+        session2 = WorkoutSession.objects.create(user=self.user, date='2024-04-07', duration=60, notes='test session 2')
+        session3 = WorkoutSession.objects.create(user=self.user, date='2024-04-06', duration=60, notes='test session 3')
+
+        response = self.client.get(self.sort_workout_sessions_furthest_early)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'workout_session.html')
+        self.assertTrue('workout_sessions' in response.context)
+
+        sorted_sessions = response.context['workout_sessions']
+        self.assertEqual(len(sorted_sessions), 3)
+        self.assertEqual(sorted_sessions[0], session2)
+        self.assertEqual(sorted_sessions[1], session3)
+        self.assertEqual(sorted_sessions[2], session1)
