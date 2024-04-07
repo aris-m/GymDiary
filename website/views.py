@@ -290,9 +290,18 @@ def progress(request):
     health_metrics = HealthMetric.objects.filter(user=request.user).order_by('date')
     
     if health_metrics:
-        dates = [metric.date for metric in health_metrics]
-        bodyweights = [metric.weight for metric in health_metrics]
-        calories_intake = [metric.calories for metric in health_metrics]
+        dates = []
+        bodyweights = []
+        calories_intake = []
+        
+        for metric in health_metrics:
+            dates.append(metric.date)
+            calories_intake.append(metric.calories)
+            
+            if metric.unit == "lbs":
+                bodyweights.append(metric.weight * 0.453592)
+            else:
+                bodyweights.append(metric.weight)
         
         weight_fig = px.line(
             x=dates,
@@ -313,7 +322,7 @@ def progress(request):
     
     weight_fig.update_layout(
             title={
-                'text': "Bodyweight Progression",
+                'text': "Bodyweight Progression" + "<br><span style='font-size: 16px;'>displayed in Kilogram for simplicity</span>",
                 'x':0.5, 
                 'xanchor': 'center',
                 'yanchor': 'top',
@@ -365,9 +374,18 @@ def friend_progress(request, friend_id):
     health_metrics = HealthMetric.objects.filter(user=friend).order_by('date')
     
     if health_metrics:
-        dates = [metric.date for metric in health_metrics]
-        bodyweights = [metric.weight for metric in health_metrics]
-        calories_intake = [metric.calories for metric in health_metrics]
+        dates = []
+        bodyweights = []
+        calories_intake = []
+        
+        for metric in health_metrics:
+            dates.append(metric.date)
+            calories_intake.append(metric.calories)
+            
+            if metric.unit == "lbs":
+                bodyweights.append(metric.weight * 0.453592)
+            else:
+                bodyweights.append(metric.weight)
         
         weight_fig = px.line(
             x=dates,
@@ -388,7 +406,7 @@ def friend_progress(request, friend_id):
     
     weight_fig.update_layout(
             title={
-                'text': f"{friend.username}'s Bodyweight Progression",
+                'text': f"{friend.username}'s Bodyweight Progression" + "<br><span style='font-size: 16px;'>displayed in Kilogram for simplicity</span>",
                 'x':0.5, 
                 'xanchor': 'center',
                 'yanchor': 'top',
