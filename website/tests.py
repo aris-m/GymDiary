@@ -175,3 +175,59 @@ class tests(TestCase):
         self.assertEqual(sorted_sessions[0], session2)
         self.assertEqual(sorted_sessions[1], session3)
         self.assertEqual(sorted_sessions[2], session1)
+    
+    def test_add_workout(self):
+        self.session = WorkoutSession.objects.create(user=self.user, date='2024-04-07', duration=60, notes='test session')
+        url = reverse('add-workout', kwargs={'session_id': self.session.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'add_workout.html')
+        self.assertEqual(response.context['workout_session'], self.session)
+        
+        data = {
+            'name': 'Test Workout',
+            'type': 'Strength Training',
+            'muscle_groups': 'chest,arms',
+        }
+        
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('session', kwargs={'pk': self.session.pk}) + '?tab=workouts')
+        self.assertEqual(self.session.workouts.count(), 1)
+        added_workout = self.session.workouts.first()
+        self.assertEqual(added_workout.name, 'Test Workout')
+        self.assertEqual(added_workout.type, 'Strength Training')
+        self.assertEqual(added_workout.muscle_groups, "['chest,arms']")
+    
+    def test_delete_workout(self):
+        self.session = WorkoutSession.objects.create(user=self.user, date='2024-04-07', duration=60, notes='test session')
+        self.workout = Workout.objects.create(workout_session=self.session, name='Test Workout', type='Strength Training', muscle_groups='chest,arms')
+        url = reverse('delete-workout', kwargs={'session_id': self.session.pk, 'workout_id':self.workout.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/workout_list.html')
+        self.assertEqual(len(response.context['workouts']), 0)
+    
+    def test_update_workout(self):
+        self.session = WorkoutSession.objects.create(user=self.user, date='2024-04-07', duration=60, notes='test session')
+        self.workout = Workout.objects.create(workout_session=self.session, name='Test Workout', type='Strength Training', muscle_groups='chest,arms')
+        url = reverse('update-workout', kwargs={'session_id': self.session.pk, 'workout_id': self.workout.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'update_workout.html')
+        self.assertEqual(response.context['workout_session'], self.session)
+        self.assertEqual(response.context['workout'], self.workout)
+       
+        updated_data = {
+            'name': 'Updated Workout',
+            'type': 'Cardio',
+            'muscle_groups': 'legs',
+        }
+        
+        response = self.client.post(url, updated_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('session', kwargs={'pk': self.session.pk}) + '?tab=workouts')
+        updated_workout = Workout.objects.get(pk=self.workout.pk)
+        self.assertEqual(updated_workout.name, 'Updated Workout')
+        self.assertEqual(updated_workout.type, 'Cardio')
+        self.assertEqual(updated_workout.muscle_groups, "['legs']")

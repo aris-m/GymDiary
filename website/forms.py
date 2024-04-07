@@ -60,6 +60,11 @@ class WorkoutForm(forms.ModelForm):
         self.fields['muscle_groups'].label = 'Muscle Groups'
         self.fields['muscle_groups'].widget = forms.CheckboxSelectMultiple(choices=Workout.MUSCLE_GROUP_CHOICES)
         self.fields['muscle_groups'].required = False
+    
+    # def clean_muscle_groups(self):
+    #     muscle_groups = self.cleaned_data.get('muscle_groups')
+    #     muscle_groups.strip("[]")
+    #     return muscle_groups
         
 class GoalForm(forms.ModelForm):
     description = forms.CharField(label="Description", max_length=200, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}), required=True)

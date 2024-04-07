@@ -21,7 +21,7 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ workout.name }}</td>
                     <td>{{ workout.type }}</td>
-                    <td>{{ workout.muscle_groups }}</td>
+                    <td>{{ workout.muscle_groups}}</td>
                     <td>
                         <a href="{% url 'update-workout' workout_session.id workout.id %}" style="text-decoration: none;" hx-target=".workouts-container">
                             <span class="fas fa-pencil-alt"></span>
