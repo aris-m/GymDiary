@@ -231,3 +231,43 @@ class tests(TestCase):
         self.assertEqual(updated_workout.name, 'Updated Workout')
         self.assertEqual(updated_workout.type, 'Cardio')
         self.assertEqual(updated_workout.muscle_groups, "['legs']")
+    
+    def test_add_goal(self):
+        self.session = WorkoutSession.objects.create(user=self.user, date='2024-04-07', duration=60, notes='test session')
+        url = reverse('add-goal', kwargs={'session_id': self.session.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'add_goal.html')
+        self.assertEqual(response.context['workout_session'], self.session)
+
+        data = {
+            'description': 'Test Goal',
+            'accomplished': False,
+        }
+
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('session', kwargs={'pk': self.session.pk}) + '?tab=goals')
+        self.assertEqual(self.session.goals.count(), 1)
+        added_goal = self.session.goals.first()
+        self.assertEqual(added_goal.description, 'Test Goal')
+        self.assertEqual(added_goal.accomplished, False)
+
+    def test_accomplish_goal(self):
+        self.session = WorkoutSession.objects.create(user=self.user, date='2024-04-07', duration=60, notes='test session')
+        self.goal = Goal.objects.create(workout_session=self.session, description='Test Goal', accomplished=False)
+
+        url = reverse('accomplish', kwargs={'session_id': self.session.pk, 'goal_id': self.goal.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.goal.refresh_from_db()
+        self.assertTrue(self.goal.accomplished)
+
+    def test_delete_goal(self):
+        self.session = WorkoutSession.objects.create(user=self.user, date='2024-04-07', duration=60, notes='test session')
+        self.goal = Goal.objects.create(workout_session=self.session, description='Test Goal', accomplished=False)
+
+        url = reverse('delete-goal', kwargs={'session_id': self.session.pk, 'goal_id': self.goal.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.session.goals.count(), 0)
