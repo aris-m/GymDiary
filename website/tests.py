@@ -2,8 +2,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from .forms import WorkoutSessionForm
-from .models import WorkoutSession, Workout, Goal
+from .forms import HealthMetricForm, WorkoutSessionForm
+from .models import HealthMetric, WorkoutSession, Workout, Goal
 from datetime import datetime
 
 class tests(TestCase):
@@ -271,3 +271,58 @@ class tests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.session.goals.count(), 0)
+
+    def test_view_health_metric(self):
+        response = self.client.get(reverse('health-metric'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'health_metric.html')
+        self.assertTrue('health_metrics' in response.context)
+
+    def test_add_health_metric(self):
+        response = self.client.get(reverse('add-health-metric'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'add_health_metric.html')
+        self.assertIsInstance(response.context['form'], HealthMetricForm)
+
+        data = {
+            'date': datetime.strptime('2024-04-07', '%Y-%m-%d').date(),
+            'weight': 70,
+            'unit': 'kg',
+            'calories': 2000,
+        }
+        
+        response = self.client.post(reverse('add-health-metric'), data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('health-metric'))
+        self.assertTrue(HealthMetric.objects.filter(user=self.user, date=data['date']).exists())
+
+    def test_delete_health_metric(self):
+        self.metric = HealthMetric.objects.create(user=self.user, date='2024-04-07', weight=70, unit='kg', calories=2000)
+        response = self.client.get(reverse('delete-health-metric', kwargs={'metric_id': self.metric.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/health_metric_list.html')
+        self.assertFalse(HealthMetric.objects.filter(id=self.metric.pk).exists())
+
+    def test_update_health_metric(self):
+        self.metric = HealthMetric.objects.create(user=self.user, date='2024-04-07', weight=70, unit='kg', calories=2000)
+        url = reverse('update-health-metric', kwargs={'metric_id': self.metric.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'update_health_metric.html')
+        self.assertEqual(response.context['health_metric'], self.metric)
+
+        updated_data = {
+            'date': datetime.strptime('2024-04-07', '%Y-%m-%d').date(),
+            'weight': 75,
+            'unit': 'kg',
+            'calories': 2200,
+        }
+
+        response = self.client.post(url, updated_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('health-metric'))
+        self.metric.refresh_from_db()
+        self.assertEqual(self.metric.date, updated_data['date'])
+        self.assertEqual(self.metric.weight, updated_data['weight'])
+        self.assertEqual(self.metric.unit, updated_data['unit'])
+        self.assertEqual(self.metric.calories, updated_data['calories'])
