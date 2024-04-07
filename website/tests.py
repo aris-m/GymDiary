@@ -1,6 +1,8 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
+
+from .forms import WorkoutSessionForm
 from .models import WorkoutSession, Workout, Goal
 from datetime import datetime
 
@@ -13,6 +15,7 @@ class tests(TestCase):
         self.index_url = reverse('index')
         self.tracker_url = reverse('tracker')
         self.workout_sessions_url = reverse('workout-sessions')
+        self.create_session_url = reverse('create-workout-session')
         self.sort_workout_sessions_early_furthest = reverse('sort-workout-sessions-early-furthest')
         self.sort_workout_sessions_furthest_early = reverse('sort-workout-sessions-furthest-early')
         self.user = User.objects.create_user(username='testuser', password='testpassword')
@@ -68,6 +71,28 @@ class tests(TestCase):
         self.assertTemplateUsed(response, 'workout_session.html')
         self.assertTrue('workout_sessions' in response.context)
         self.assertEqual(len(response.context['workout_sessions']), 1)
+    
+    def test_view_create_workout_session(self):
+        response = self.client.get(self.create_session_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'create_session.html')
+        self.assertIsInstance(response.context['form'], WorkoutSessionForm)
+    
+    def test_create_workout_session(self):
+        data = {
+            'date': datetime.strptime('2024-04-07', '%Y-%m-%d').date(),
+            'duration': 60,
+            'notes': 'test session notes',
+        }
+        response = self.client.post(self.create_session_url, data)
+        self.assertEqual(response.status_code, 302)  
+        self.assertRedirects(response, self.workout_sessions_url)  
+
+        created_session = WorkoutSession.objects.last()
+        self.assertEqual(created_session.user, self.user)
+        self.assertEqual(created_session.date, datetime.strptime('2024-04-07', '%Y-%m-%d').date())
+        self.assertEqual(created_session.duration, 60)
+        self.assertEqual(created_session.notes, 'test session notes')
     
     def test_view_user_session(self):
         self.session = WorkoutSession.objects.create(user=self.user, date='2024-04-07', duration=60, notes='test session')
