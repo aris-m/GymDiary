@@ -3,8 +3,9 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 
 from .forms import HealthMetricForm, WorkoutSessionForm
-from .models import HealthMetric, WorkoutSession, Workout, Goal
+from .models import HealthMetric, WorkoutSession, Workout, Goal, FriendshipList, FriendshipRequest
 from datetime import datetime
+from django.contrib.messages import get_messages
 
 class tests(TestCase):
     def setUp(self):
@@ -19,6 +20,9 @@ class tests(TestCase):
         self.sort_workout_sessions_early_furthest = reverse('sort-workout-sessions-early-furthest')
         self.sort_workout_sessions_furthest_early = reverse('sort-workout-sessions-furthest-early')
         self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.user2 = User.objects.create_user(username='testuser2', password='testpassword2')
+        FriendshipList.objects.create(user=self.user)
+        FriendshipList.objects.create(user=self.user2)
         self.client.login(username='testuser', password='testpassword')
 
     def test_login_valid_user(self):
@@ -326,3 +330,103 @@ class tests(TestCase):
         self.assertEqual(self.metric.weight, updated_data['weight'])
         self.assertEqual(self.metric.unit, updated_data['unit'])
         self.assertEqual(self.metric.calories, updated_data['calories'])
+    
+    def test_progress_view(self):
+        WorkoutSession.objects.create(user=self.user)
+        Workout.objects.create(workout_session=WorkoutSession.objects.first())
+        Goal.objects.create(workout_session=WorkoutSession.objects.first())
+        HealthMetric.objects.create(user=self.user, weight=70, unit='kg', calories=2000)
+        
+        response = self.client.get(reverse('progress'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'progress.html')
+        self.assertTrue('total_user_sessions' in response.context)
+        self.assertTrue('average_workouts_per_session' in response.context)
+        self.assertTrue('average_goals_accomplished' in response.context)
+        self.assertTrue('weight_chart' in response.context)
+        self.assertTrue('calorie_chart' in response.context)
+    
+    def test_friend_progress_view(self):
+        friend = User.objects.create_user(username='friend', password='testpassword')
+        WorkoutSession.objects.create(user=friend)
+        Workout.objects.create(workout_session=WorkoutSession.objects.first())
+        Goal.objects.create(workout_session=WorkoutSession.objects.first())
+        HealthMetric.objects.create(user=friend, weight=150, unit='lbs', calories=1500)
+
+        response = self.client.get(reverse('friend-progress', kwargs={'friend_id': friend.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'friend_progress.html')
+        self.assertTrue('friend' in response.context)
+        self.assertTrue('total_sessions' in response.context)
+        self.assertTrue('average_workouts_per_session' in response.context)
+        self.assertTrue('average_goals_accomplished' in response.context)
+        self.assertTrue('weight_chart' in response.context)
+        self.assertTrue('calorie_chart' in response.context)
+
+    def test_friends_list(self):
+        response = self.client.get(reverse('community'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'community.html')
+        self.assertTrue('friendshipList' in response.context)
+        self.assertTrue('friend_requests' in response.context)
+    
+    def test_send_friend_request(self):
+        response = self.client.post(reverse('send-friend-request', kwargs={'friend_id':self.user2.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/friend-list.html')
+        self.assertTrue('friendshipList' in response.context)
+        self.assertTrue('friend_requests' in response.context)
+        self.assertTrue(FriendshipRequest.objects.filter(sender=self.user, receiver=self.user2).exists())
+        
+        response = self.client.post(reverse('send-friend-request', kwargs={'friend_id':self.user2.pk}))
+        messages = [m.message for m in get_messages(response.wsgi_request)]
+        self.assertTrue("You have already sent a friend request to this user." in messages)
+        
+        self.client.logout()
+        self.client.login(username="testuser2", password="testpassword2")
+        response = self.client.post(reverse('send-friend-request', kwargs={'friend_id':self.user.pk}))
+        messages = [m.message for m in get_messages(response.wsgi_request)]
+        self.assertTrue("This user have already sent you a friend request." in messages)
+    
+    def test_reject_friend_request(self):
+        FriendshipRequest.objects.create(sender=self.user2, receiver=self.user)
+        response = self.client.post(reverse('reject-friend-request', kwargs={'request_id': FriendshipRequest.objects.first().pk}))
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/friend-list.html')
+        self.assertTrue('friendshipList' in response.context)
+        self.assertTrue('friend_requests' in response.context)
+        self.assertFalse(FriendshipRequest.objects.filter(sender=self.user2, receiver=self.user).exists())
+    
+    def test_add_friend(self):
+        FriendshipRequest.objects.create(sender=self.user2, receiver=self.user)
+        response = self.client.post(reverse('add-friend', kwargs={'friend_id': self.user2.pk}))
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/friend-list.html')
+        self.assertTrue('friendshipList' in response.context)
+        self.assertTrue('friend_requests' in response.context)
+        self.assertTrue(self.user2 in FriendshipList.objects.get(user=self.user).friends.all())
+    
+    def test_search_friends(self):
+        User.objects.create_user(username='user3', password='testpassword3')
+        response = self.client.post(reverse('search-friends'), {'search': 'user3'})
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/search-friends-result.html')
+        self.assertTrue('results' in response.context)
+        self.assertEqual(len(response.context['results']), 1)
+        self.assertEqual(response.context['results'][0].username, 'user3')                                                                                      
+    
+    def test_unfriend(self):
+        FriendshipList.objects.get(user=self.user).friends.add(self.user2)
+        FriendshipList.objects.get(user=self.user2).friends.add(self.user)
+        
+        response = self.client.post(reverse('unfriend', kwargs={'friend_id': self.user2.pk}))
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/friend-list.html')
+        self.assertTrue('friendshipList' in response.context)
+        self.assertTrue('friend_requests' in response.context)
+        self.assertFalse(self.user2 in FriendshipList.objects.get(user=self.user).friends.all())
+        self.assertFalse(self.user in FriendshipList.objects.get(user=self.user2).friends.all())
