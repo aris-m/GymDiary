@@ -19,4 +19,8 @@ def main():
 
 
 if __name__ == "__main__":
+    if 'test' in sys.argv:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings_test')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
     main()

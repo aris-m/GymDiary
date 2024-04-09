@@ -78,11 +78,11 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'railway',
+        'NAME': 'GymDiary',
         'USER': 'root',
-        'PASSWORD': 'UPHmSVnaNtMZIhsMkKCkscqLXdTMBIGs',
-        'HOST': 'viaduct.proxy.rlwy.net',
-        'PORT': '40574',
+        'PASSWORD': 'Password#123',
+        'HOST': 'localhost',
+        'PORT': '3306', 
     },
 }
 
