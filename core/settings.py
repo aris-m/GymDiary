@@ -77,12 +77,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'rOFfZbwCNGQCLrbwPzjYCLsBTadAYeYV',
-        'HOST': 'monorail.proxy.rlwy.net',
-        'PORT': '17479',
+        'USER': 'root',
+        'PASSWORD': 'AidrYZoNYzryWZcVwtdJwomEqRAMIukM',
+        'HOST': 'viaduct.proxy.rlwy.net',
+        'PORT': '32916',
     }
 }
 
