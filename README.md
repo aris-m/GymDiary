@@ -21,4 +21,4 @@ GymDiary is a user-friendly fitness web app that aids you in recording and track
 - download dependencies
   - open command line interface, go to GymDiary directory and type the following: pip install -r requirements.txt
 - Run the server with: python manage.py runserver
-- the program should be running in localhost:8000/
+- the program should be running at http://127.0.0.1:8000/
