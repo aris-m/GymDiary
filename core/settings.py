@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-utw#3%(pul*(hn-h13wr=4yi6%!ox(*lz$ijiji!iop**&s_l4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', ]
 
 
 # Application definition
@@ -76,13 +76,13 @@ WSGI_APPLICATION = "core.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "GymDiary",
-        "USER": "root",
-        "PASSWORD": "Password#123",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'rOFfZbwCNGQCLrbwPzjYCLsBTadAYeYV',
+        'HOST': 'monorail.proxy.rlwy.net',
+        'PORT': '17479',
     }
 }
 
@@ -123,11 +123,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')

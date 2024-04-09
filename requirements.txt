@@ -64,3 +64,4 @@ websockets==12.0
 wsproto==1.2.0
 xyzservices==2023.10.1
 yarl==1.9.4
+pyscopg2-binary==2.9.6
