@@ -35,8 +35,10 @@ jobs:
         pip install -r requirements.txt
     - name: Django Testing
       run: |
+        export DJANGO_SETTINGS_MODULE=core.settings_test
         python manage.py test website
     - name: Coverage report
       run: |
+        export DJANGO_SETTINGS_MODULE=core.settings_test
         coverage run manage.py test
         coverage report
