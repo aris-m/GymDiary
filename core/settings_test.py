@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': 'GymDiary',
         'USER': 'root',
         'PASSWORD': 'Password#123',
-        'HOST': 'localhost',
+        'HOST': 'mysql',
         'PORT': '3306', 
     },
 }
