@@ -77,7 +77,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Check if running on Vercel (production)
 if os.environ.get('VERCEL_ENV'):
-    # Vercel Postgres database
+    # Neon Postgres database
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -86,6 +86,9 @@ if os.environ.get('VERCEL_ENV'):
             'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
             'HOST': os.environ.get('POSTGRES_HOST'),
             'PORT': '5432',
+            'OPTIONS': {
+                'sslmode': 'require',  # Neon requires SSL
+            },
         }
     }
 else:
