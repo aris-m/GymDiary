@@ -4,3 +4,4 @@ plotly==5.20.0
 pandas==2.2.1
 pillow==10.3.0
 python-dateutil==2.9.0.post0coverage
+coverage
