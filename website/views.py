@@ -8,6 +8,8 @@ from .forms import SignUpForm, WorkoutSessionForm, WorkoutForm, GoalForm, Health
 from .models import HealthMetric, WorkoutSession, Workout, Goal, FriendshipList, FriendshipRequest
 from django.contrib.auth.models import User
 import plotly.express as px
+from django.http import JsonResponse
+from django.db import connection
 
 def index(request):
     return render(request, "index.html", {})
@@ -523,3 +525,56 @@ def unfriend(request, friend_id):
         messages.error(request, "This user is not in your friends list", extra_tags="error")
 
     return render(request, 'partials/friend-list.html', {"friend_requests":friend_requests, 'friendshipList': friendship_list_user.friends.all()})
+
+def health_check(request):
+    try:
+        # Try to execute a simple query
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            result = cursor.fetchone()
+        
+        # Get database info (convert PosixPath to string)
+        db_settings = {
+            'engine': connection.settings_dict.get('ENGINE'),
+            'name': str(connection.settings_dict.get('NAME')),
+            'host': str(connection.settings_dict.get('HOST')) if connection.settings_dict.get('HOST') else None,
+            'port': connection.settings_dict.get('PORT'),
+            'user': connection.settings_dict.get('USER'),
+        }
+        
+        # Check if tables exist
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_schema = 'public'
+                    ORDER BY table_name
+                """)
+                tables = cursor.fetchall()
+                table_list = [table[0] for table in tables]
+        except:
+            # SQLite doesn't have information_schema, use sqlite_master
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT name FROM sqlite_master 
+                    WHERE type='table' AND name NOT LIKE 'sqlite_%'
+                    ORDER BY name
+                """)
+                tables = cursor.fetchall()
+                table_list = [table[0] for table in tables]
+        
+        return JsonResponse({
+            'status': 'ok',
+            'database': 'connected',
+            'db_info': db_settings,
+            'tables_count': len(table_list),
+            'tables': table_list
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'database': 'disconnected',
+            'error': str(e),
+            'error_type': type(e).__name__
+        }, status=500)
