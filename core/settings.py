@@ -28,6 +28,19 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['.vercel.app', '.now.sh', '127.0.0.1', 'localhost']
 
+# CSRF Settings for Vercel deployment
+# This is CRITICAL for POST requests (registration, login, etc.) to work on Vercel
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://*.now.sh',
+]
+
+# Optional: Add your specific Vercel URL if the wildcard doesn't work
+# Replace 'your-app-name' with your actual Vercel app name
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://your-app-name.vercel.app',
+# ]
+
 
 # Application definition
 
