@@ -1,5 +1,7 @@
 [![CI build](https://github.com/aris-m/GymDiary/actions/workflows/build.yml/badge.svg)](https://github.com/aris-m/GymDiary/actions)
 
+Link to web app: https://gym-diary-seven.vercel.app/
+
 # GymDiary
 
 ## Project definition and objectives
@@ -15,10 +17,4 @@ GymDiary is a user-friendly fitness web app that aids you in recording and track
 ## Class diagram
 ![class_Diagram](resources/GymDiary_class_diagram.png)
 
-## How to run the application
-- create your own virtual environment
-  - python -m venv [virtual environment name]
-- download dependencies
-  - open command line interface, go to GymDiary directory and type the following: pip install -r requirements.txt
-- Run the server with: python manage.py runserver
-- the program should be running at http://127.0.0.1:8000/
+
